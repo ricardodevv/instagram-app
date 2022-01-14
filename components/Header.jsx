@@ -58,7 +58,7 @@ const Header = () => {
           <HeartIcon className="navBtn" />
 
           <img
-            src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg"
+            src="https://cutewallpaper.org/22/anime-profile-picture-wallpapers/3005126266.jpg"
             alt="profile-pic"
             className="h-10 rounded-full cursor-pointer"
           />
