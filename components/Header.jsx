@@ -6,12 +6,36 @@ import {
   UserGroupIcon,
   HeartIcon,
 } from "@heroicons/react/outline";
+import { useSession, signIn } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 
 const Header = () => {
+  const [showPopper, setShowPopper] = useState(false);
+  const { data: session } = useSession();
+  const popperRef = useRef(null);
+
+  useEffect(() => {
+    const clickOutside = (event) => {
+      console.log(event.target);
+      if (
+        showPopper &&
+        popperRef.current &&
+        !popperRef.current.contains(event.target)
+      ) {
+        setShowPopper(!showPopper);
+      }
+    };
+
+    document.addEventListener("mousedown", clickOutside);
+    return () => {
+      document.removeEventListener("mousedown", clickOutside);
+    };
+  }, [showPopper]);
+
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
       {/* // *Logo  */}
-      <div className="flex justify-between max-w-6xl mx-5 xl:mx-auto cursor-pointer">
+      <div className="flex justify-between max-w-6xl mx-5 xl:mx-auto">
         <div className="relative hidden lg:inline-grid w-24">
           <Image
             src={"https://links.papareact.com/ocw"}
@@ -44,24 +68,38 @@ const Header = () => {
         <div className="flex items-center justify-end space-x-4">
           <HomeIcon className="navBtn" />
           <MenuIcon className="h-6 md:hidden cursor-pointer" />
-          <div className="relative navBtn">
-            <PaperAirplaneIcon className="navBtn rotate-45" />
-            <div
-              className="absolute -top-2 -right-2 text-xs w-5 h-5
-            bg-red-500 rounded-full flex items-center justify-center text-white"
-            >
-              3
-            </div>
-          </div>
-          <PlusCircleIcon className="navBtn" />
-          <UserGroupIcon className="navBtn" />
-          <HeartIcon className="navBtn" />
 
-          <img
-            src="https://cutewallpaper.org/22/anime-profile-picture-wallpapers/3005126266.jpg"
-            alt="profile-pic"
-            className="h-10 rounded-full cursor-pointer"
-          />
+          {session ? (
+            <>
+              <div className="relative navBtn">
+                <PaperAirplaneIcon className="navBtn rotate-45" />
+                <div
+                  className="absolute -top-2 -right-2 text-xs w-5 h-5
+            bg-red-500 rounded-full flex items-center justify-center text-white"
+                >
+                  3
+                </div>
+              </div>
+              <PlusCircleIcon className="navBtn" />
+              <UserGroupIcon className="navBtn" />
+              <HeartIcon className="navBtn" />
+
+              <div>
+                <img
+                  src={session?.user?.image}
+                  alt="profile-pic"
+                  className="h-6 rounded-full cursor-pointer"
+                  ref={popperRef}
+                  onClick={() => setShowPopper(!showPopper)}
+                />
+                {showPopper ? (
+                  <div className="absolute bg-slate-500 p-3">Popper</div>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <button onClick={signIn}>Sign In</button>
+          )}
         </div>
       </div>
     </div>

@@ -12,14 +12,14 @@ const Post = ({ id, username, userImg, img, caption }) => {
     <div className="bg-white my-7 border rounded-sm">
       {/* // * Header */}
 
-      <div className="flex items-center p-5">
+      <div className="flex items-center p-3">
         <img
           className="rounded-full h-12 w-12 object-contain
       border p-1 mr-3 cursor-pointer"
           src={userImg}
           alt="user image"
         />
-        <p className="flex-1 font-bold">{username}</p>
+        <p className="flex-1 font-bold text-gray-800">{username}</p>
         <DotsHorizontalIcon className="h-5 cursor-pointer" />
       </div>
 
@@ -31,7 +31,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
         <div className="flex space-x-4">
           <HeartIcon className="btn" />
           <ChatIcon className="btn" />
-          <PaperAirplaneIcon className="btn" />
+          <PaperAirplaneIcon className="relative btn rotate-[63deg] -top-[3.5px] scale-[0.9]" />
         </div>
 
         <BookmarkIcon className="btn" />
@@ -39,7 +39,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
 
       {/* // * caption */}
       <p className="p-5 truncate">
-        <span className="font-bold mr-1">{username}</span>
+        <span className="font-bold mr-1 text-gray-800">{username}</span>
         {caption}
       </p>
 
@@ -47,7 +47,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
 
       {/* // * input box */}
       <form className="flex items-center p-4" action="">
-        <EmojiHappyIcon className="h-7" />
+        <EmojiHappyIcon className="h-6 cursor-pointer" />
         <input
           type="text"
           placeholder="Add a commet..."
