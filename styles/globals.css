@@ -11,4 +11,14 @@
   .btn {
     @apply h-7 hover:text-gray-400 cursor-pointer;
   }
+
+  .btnBlue {
+    @apply text-blue-400 text-sm font-semibold hover:underline;
+  }
+
+  .storiesCircle {
+    @apply h-14 w-14 rounded-full p-[2px] object-contain 
+    cursor-pointer hover:scale-110 transition transform
+    duration-200 ease-out active:scale-95;
+  }
 }

@@ -5,18 +5,23 @@ import {
   PlusCircleIcon,
   UserGroupIcon,
   HeartIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/outline";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useRecoilState } from "recoil";
+import { modalState } from "../atoms/modalAtom";
 
 const Header = () => {
   const [showPopper, setShowPopper] = useState(false);
+  const [openModal, setOpenModal] = useRecoilState(modalState);
   const { data: session } = useSession();
   const popperRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     const clickOutside = (event) => {
-      console.log(event.target);
       if (
         showPopper &&
         popperRef.current &&
@@ -26,17 +31,25 @@ const Header = () => {
       }
     };
 
-    document.addEventListener("mousedown", clickOutside);
+    document.addEventListener("click", clickOutside);
     return () => {
-      document.removeEventListener("mousedown", clickOutside);
+      document.removeEventListener("click", clickOutside);
     };
   }, [showPopper]);
+
+  const logOut = () => {
+    setShowPopper(!showPopper);
+    signOut();
+  };
 
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
       {/* // *Logo  */}
       <div className="flex justify-between max-w-6xl mx-5 xl:mx-auto">
-        <div className="relative hidden lg:inline-grid w-24">
+        <div
+          onClick={() => router.push("/")}
+          className="relative hidden lg:inline-grid w-24 cursor-pointer"
+        >
           <Image
             src={"https://links.papareact.com/ocw"}
             layout="fill"
@@ -44,7 +57,10 @@ const Header = () => {
           />
         </div>
 
-        <div className="relative lg:hidden w-10 flex-shrink-0 cursor-pointer">
+        <div
+          onClick={() => router.push("/")}
+          className="relative lg:hidden w-10 flex-shrink-0 cursor-pointer"
+        >
           <Image
             src={"https://links.papareact.com/jjm"}
             layout="fill"
@@ -66,7 +82,7 @@ const Header = () => {
 
         {/* // * Nav section */}
         <div className="flex items-center justify-end space-x-4">
-          <HomeIcon className="navBtn" />
+          <HomeIcon onClick={() => router.push("/")} className="navBtn" />
           <MenuIcon className="h-6 md:hidden cursor-pointer" />
 
           {session ? (
@@ -80,20 +96,36 @@ const Header = () => {
                   3
                 </div>
               </div>
-              <PlusCircleIcon className="navBtn" />
+              <PlusCircleIcon
+                onClick={() => setOpenModal(true)}
+                className="navBtn"
+              />
               <UserGroupIcon className="navBtn" />
               <HeartIcon className="navBtn" />
 
-              <div>
+              <div className="relative">
                 <img
                   src={session?.user?.image}
                   alt="profile-pic"
                   className="h-6 rounded-full cursor-pointer"
-                  ref={popperRef}
                   onClick={() => setShowPopper(!showPopper)}
                 />
                 {showPopper ? (
-                  <div className="absolute bg-slate-500 p-3">Popper</div>
+                  <div
+                    id="popper"
+                    className="flex flex-col w-max absolute bg-white shadow-md p-5 mt-4 -left-11"
+                    ref={popperRef}
+                  >
+                    <div className="relative">
+                      <ChevronUpIcon className="absolute -top-11 left-5 w-8 stroke-gray-600" />
+                      <button className="btnBlue">View Profile</button>
+                      <div>
+                        <button onClick={() => logOut()} className="btnBlue">
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 ) : null}
               </div>
             </>
