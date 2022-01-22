@@ -5,7 +5,7 @@ import Modal from "../components/Modal";
 
 const Home = () => {
   return (
-    <div className="bg-gray-50 h-screen overflow-y-scroll scrollbar-hide">
+    <div className="bg-gray-50 h-screen overflow-y-scroll">
       <Head>
         <title>Instagram</title>
       </Head>
@@ -13,7 +13,7 @@ const Home = () => {
       {/* // * Header */}
       <Header />
 
-      {/* // * Feet  */}
+      {/* // * Feed  */}
       <Feed />
 
       {/* // * Modal */}
