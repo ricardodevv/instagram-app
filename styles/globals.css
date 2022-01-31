@@ -8,6 +8,11 @@
     hover:scale-125 transition-all duration-150 ease-out;
   }
 
+  .sideMenuBtn {
+    @apply h-6 md:inline-flex cursor-pointer 
+    hover:scale-125 transition-all duration-150 ease-out;
+  }
+
   .btn {
     @apply h-7 hover:text-gray-400 cursor-pointer;
   }
@@ -24,5 +29,9 @@
 
   .inputForm {
     @apply w-full h-[2.3rem] border-gray-300 rounded-[4px] placeholder:text-sm mt-1.5;
+  }
+
+  .postBtn {
+    @apply px-4 py-0.5 text-xl border-2 border-black rounded-2xl;
   }
 }

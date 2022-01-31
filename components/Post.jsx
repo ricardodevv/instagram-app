@@ -14,12 +14,12 @@ const Post = ({ id, username, userImg, img, caption }) => {
 
       <div className="flex items-center p-3">
         <img
-          className="rounded-full h-12 w-12 object-contain
-      border p-1 mr-3 cursor-pointer"
+          className="rounded-full h-9 w-9 object-contain
+      border mr-3 cursor-pointer"
           src={userImg}
           alt="user image"
         />
-        <p className="flex-1 font-bold text-gray-800">{username}</p>
+        <p className="flex-1 font-bold text-sm text-gray-700">{username}</p>
         <DotsHorizontalIcon className="h-5 cursor-pointer" />
       </div>
 

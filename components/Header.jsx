@@ -7,45 +7,46 @@ import {
   HeartIcon,
   ChevronUpIcon,
 } from "@heroicons/react/outline";
-import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atoms/modalAtom";
+import { userState } from "../atoms/userAtom";
+import { menuState } from "../atoms/menuAtom";
+import { closePopUp, logOut } from "../src/utils";
+import ShowMenu from "../components/ShowMenu";
 
 const Header = () => {
   const [showPopper, setShowPopper] = useState(false);
+  const [showMenu, setShowMenu] = useRecoilState(menuState);
   const [openModal, setOpenModal] = useRecoilState(modalState);
-  const { data: session } = useSession();
-  const popperRef = useRef(null);
+  const Ref = useRef(null);
   const router = useRouter();
+  const [user, setUser] = useRecoilState(userState);
 
   useEffect(() => {
     const clickOutside = (event) => {
-      if (
-        showPopper &&
-        popperRef.current &&
-        !popperRef.current.contains(event.target)
-      ) {
-        setShowPopper(!showPopper);
-      }
+      closePopUp(event, showPopper, Ref, setShowPopper);
     };
-
     document.addEventListener("click", clickOutside);
     return () => {
       document.removeEventListener("click", clickOutside);
     };
   }, [showPopper]);
 
-  const logOut = () => {
-    setShowPopper(!showPopper);
-    signOut();
+  const logOutUser = () => {
+    try {
+      setShowPopper(!showPopper);
+      logOut(user, setUser);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
       {/* // *Logo  */}
-      <div className="flex justify-between max-w-6xl mx-5 xl:mx-auto">
+      <div className="flex justify-between max-w-4xl mx-5 xl:mx-auto">
         <div
           onClick={() => router.push("/")}
           className="relative hidden lg:inline-grid w-24 cursor-pointer"
@@ -69,24 +70,28 @@ const Header = () => {
         </div>
 
         {/* // * Search bar  */}
-        <div className="relative mt-1 p-3 rounded-md">
+        <div className="relative m-3 rounded-md">
           <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon className="h-5 w-5 text-gray-500" />
+            <SearchIcon className="h-5 w-5 text-gray-400" />
           </div>
           <input
-            className="bg-gray-50 block w-full pl-10 sm:text-sm transition delay-100 border-gray-300 focus:ring-black focus:border-black rounded-md"
+            className="bg-gray-100 block w-full pl-10 sm:text-sm transition delay-100 border-gray-100 focus:ring-0 focus:border-gray-100 rounded-md"
             type="text"
             placeholder="Search"
           />
         </div>
 
         {/* // * Nav section */}
-        <div className="flex items-center justify-end space-x-4">
-          <HomeIcon onClick={() => router.push("/")} className="navBtn" />
-          <MenuIcon className="h-6 md:hidden cursor-pointer" />
+        <div className="flex items-center justify-end space-x-5">
+          <MenuIcon
+            className="h-6 md:hidden cursor-pointer"
+            onClick={() => setShowMenu(!showMenu)}
+          />
+          <ShowMenu />
 
-          {session ? (
+          {user ? (
             <>
+              <HomeIcon onClick={() => router.push("/")} className="navBtn" />
               <div className="relative navBtn">
                 <PaperAirplaneIcon className="navBtn rotate-45" />
                 <div
@@ -105,7 +110,7 @@ const Header = () => {
 
               <div className="relative">
                 <img
-                  src={session?.user?.image}
+                  src="sugookun.png"
                   alt="profile-pic"
                   className="h-6 rounded-full cursor-pointer"
                   onClick={() => setShowPopper(!showPopper)}
@@ -114,13 +119,16 @@ const Header = () => {
                   <div
                     id="popper"
                     className="flex flex-col w-max absolute bg-white shadow-md p-5 mt-4 -left-11"
-                    ref={popperRef}
+                    ref={Ref}
                   >
                     <div className="relative">
                       <ChevronUpIcon className="absolute -top-11 left-5 w-8 stroke-gray-600" />
                       <button className="btnBlue">View Profile</button>
                       <div>
-                        <button onClick={() => logOut()} className="btnBlue">
+                        <button
+                          onClick={() => logOutUser()}
+                          className="btnBlue"
+                        >
                           Sign Out
                         </button>
                       </div>
