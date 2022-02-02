@@ -37,7 +37,7 @@ const Header = () => {
   const logOutUser = () => {
     try {
       setShowPopper(!showPopper);
-      logOut(user, setUser);
+      logOut(setUser);
     } catch (error) {
       console.log(error);
     }

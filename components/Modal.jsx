@@ -31,7 +31,7 @@ const Modal = () => {
 
     // 1) Create a post and add to firestore 'post' collection
     const docRef = await addDoc(collection(db, "posts"), {
-      name: user.name,
+      username: user.username,
       caption: captionRef.current.value,
       profileImg: user.profilePic,
       timestamp: serverTimestamp(),
@@ -55,7 +55,7 @@ const Modal = () => {
     setSelectedPicture(null);
   };
 
-  const addPhoto = (e) => {
+  const addPost = (e) => {
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsDataURL(e.target.files[0]);
@@ -105,7 +105,7 @@ const Modal = () => {
                   ref={filePickerRef}
                   type="file"
                   hidden
-                  onChange={addPhoto}
+                  onChange={addPost}
                 />
               </div>
               <div className="flex flex-col w-full align-start">
