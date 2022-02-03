@@ -10,7 +10,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import { auth, db } from "../firebase";
-import { createUser } from "../src/utils";
+import { createUser, userToFind } from "../src/utils";
 import CheckIsLogged from "../components/CheckIsLogged";
 
 const register = () => {
@@ -24,6 +24,12 @@ const register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useRecoilState(userState);
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
 
   const handleEmailOnChange = (e) => {
     e.preventDefault();
@@ -68,11 +74,12 @@ const register = () => {
   const signUpFirebase = async (e, email, password) => {
     e.preventDefault();
     try {
-      onAuthStateChanged(auth, async (currentUser) => {
-        currentUser && !user
-          ? createUser(userEmail, fullname, username, setUser)
-          : await createUserWithEmailAndPassword(auth, email, password);
-      });
+      createUser(userEmail, fullname, username, setUser);
+      const logger = await userToFind(userEmail, setUser);
+
+      if (logger.exists()) {
+        setUser(logger.data());
+      }
     } catch (error) {
       console.log(error);
       console.log(error.message);

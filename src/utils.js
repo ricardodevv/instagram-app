@@ -17,22 +17,23 @@ export const closePopUp = (e, statePopUp, Ref, setPopUp) => {
     : null;
 };
 
-export const createUser = async (userEmail, fullname, username, setUser) => {
+export const createUser = async (userEmail, fullname, username) => {
   await setDoc(doc(db, "users", userEmail), {
     name: fullname,
     username: username,
     email: userEmail,
   });
-  userToFind(userEmail, setUser);
 };
 
-export const userToFind = async (userEmail, setUser) => {
+export const userToFind = async (userEmail) => {
   const docToFind = doc(db, "users", userEmail);
   const docSnap = await getDoc(docToFind);
 
-  if (docSnap.exists()) {
-    setUser(docSnap.data());
-  } else {
-    console.log("No such user registered!");
-  }
+  return docSnap;
+
+  // if (docSnap.exists()) {
+  //   setUser(docSnap.data());
+  // } else {
+  //   setUser(null);
+  // }
 };

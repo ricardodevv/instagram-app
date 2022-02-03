@@ -24,6 +24,12 @@ const login = () => {
   const provider = new GoogleAuthProvider();
   const router = useRouter();
 
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
+
   const phoneImg = [
     {
       id: 0,
@@ -95,9 +101,19 @@ const login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const userLogged = result.user.email;
-      userToFind(userLogged, setUser);
-      user ? router.push("/") : setRegisterEmail(userLogged),
-        router.push("/register");
+      const logger = await userToFind(userLogged, setUser);
+
+      console.log(logger.exists());
+
+      if (logger.exists()) {
+        setUser(logger.data());
+      } else {
+        setUser(null);
+      }
+      // } else {
+      //   setRegisterEmail(userLogged);
+      //   router.push("/register");
+      // }
     } catch (error) {
       console.log(error.code);
       console.log(error.message);

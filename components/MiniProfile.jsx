@@ -4,7 +4,6 @@ import { logOut } from "../src/utils";
 
 const MiniProfile = () => {
   const [user, setUser] = useRecoilState(userState);
-  console.log(user);
 
   return (
     <div
@@ -24,7 +23,7 @@ const MiniProfile = () => {
 
       <button
         className="text-blue-400 text-xs font-semibold ml-4"
-        onClick={() => logOut(user, setUser)}
+        onClick={() => logOut(setUser)}
       >
         Sign Out
       </button>
