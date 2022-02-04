@@ -1,18 +1,12 @@
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { GoogleAuthProvider } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import CheckIsLogged from "../components/CheckIsLogged";
-import { auth } from "../firebase";
-import { userToFind } from "../src/utils";
+import { useAuth } from "../src/utils";
 
 const login = () => {
   const [changeImg, setChangeImg] = useState(0);
@@ -20,15 +14,22 @@ const login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useRecoilState(userState);
-  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
   const provider = new GoogleAuthProvider();
   const router = useRouter();
+  const auth = useAuth();
 
   useEffect(() => {
     if (user) {
       router.push("/");
     }
   }, [user]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      changeImg !== 4 ? setChangeImg(changeImg + 1) : setChangeImg(0);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [changeImg]);
 
   const phoneImg = [
     {
@@ -53,13 +54,6 @@ const login = () => {
     },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      changeImg !== 4 ? setChangeImg(changeImg + 1) : setChangeImg(0);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [changeImg]);
-
   const handleEmailOnChange = (e) => {
     e.preventDefault();
     setEmail(e.target.value);
@@ -80,46 +74,12 @@ const login = () => {
     }
   }
 
-  const signInEmail = async (e, email, password) => {
-    e.preventDefault();
-    try {
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(userCredentials);
-      setUser(userCredentials);
-      router.push("/");
-    } catch (error) {
-      console.log(error.code);
-      console.log(error.message);
-    }
+  const signInEmail = (email, password) => {
+    auth.signinEmailAndPassword(email, password);
   };
 
-  const signInGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const userLogged = result.user.email;
-      const logger = await userToFind(userLogged, setUser);
-
-      console.log(logger.exists());
-
-      if (logger.exists()) {
-        setUser(logger.data());
-      } else {
-        setUser(null);
-      }
-      // } else {
-      //   setRegisterEmail(userLogged);
-      //   router.push("/register");
-      // }
-    } catch (error) {
-      console.log(error.code);
-      console.log(error.message);
-      console.log(error.email);
-      console.log(GoogleAuthProvider.credentialFromError(error));
-    }
+  const signInGoogle = () => {
+    auth.signinPopUp(provider);
   };
 
   return (

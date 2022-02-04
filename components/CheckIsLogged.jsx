@@ -4,33 +4,23 @@ import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtom";
 import { auth } from "../firebase";
-import { userToFind } from "../src/utils";
+import { useAuth } from "../src/utils";
 import emailState from "../atoms/emailAtom";
 
 const CheckIsLogged = ({ children, pageTitle }) => {
   const [user, setUser] = useRecoilState(userState);
   const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
   const router = useRouter();
+  const autho = useAuth();
 
   useEffect(() => {
-    const isLogged = () => {
-      onAuthStateChanged(auth, async (currentUser) => {
-        if (currentUser) {
-          const logger = await userToFind(currentUser.email, setUser);
-
-          if (logger.exists()) {
-            setUser(logger.data());
-          } else {
-            setRegisterEmail(currentUser.email);
-            router.push("/register");
-          }
-        } else {
-          pageTitle !== "register" && router.push("/login");
-        }
-      });
-    };
-    return isLogged();
-  }, []);
+    onAuthStateChanged(auth, (currrentUser) => {
+      if (currrentUser && !user) {
+        autho.userToFind(currrentUser.email);
+        setRegisterEmail(currrentUser.email);
+      }
+    });
+  }, [user]);
 
   return <div>{children}</div>;
 };

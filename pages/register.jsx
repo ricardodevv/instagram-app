@@ -1,7 +1,3 @@
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-} from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -9,21 +5,18 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
-import { auth, db } from "../firebase";
-import { createUser, userToFind } from "../src/utils";
+import { useAuth } from "../src/utils";
 import CheckIsLogged from "../components/CheckIsLogged";
 
 const register = () => {
   const router = useRouter();
-  const [disabledButton, setDisabledButton] = useState(true);
   const registerEmail = useRecoilValue(emailState);
-  const [userEmail, setUserEmail] = useState(
-    registerEmail.length > 0 ? registerEmail : ""
-  );
+  const [user, setUser] = useRecoilState(userState);
+  const [disabledButton, setDisabledButton] = useState(true);
   const [fullname, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useRecoilState(userState);
+  const auth = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -53,7 +46,7 @@ const register = () => {
 
   if (disabledButton) {
     if (
-      userEmail.length > 0 ||
+      registerEmail.length > 0 ||
       password.length > 0 ||
       fullname.length > 0 ||
       username.length > 0
@@ -62,7 +55,7 @@ const register = () => {
     }
   } else {
     if (
-      userEmail.length === 0 &&
+      registerEmail.length === 0 &&
       password.length === 0 &&
       fullname.length === 0 &&
       username.length === 0
@@ -71,20 +64,9 @@ const register = () => {
     }
   }
 
-  const signUpFirebase = async (e, email, password) => {
+  const signUpFirebase = async (e, email, fullname, username, password) => {
     e.preventDefault();
-    try {
-      createUser(userEmail, fullname, username, setUser);
-      const logger = await userToFind(userEmail, setUser);
-
-      if (logger.exists()) {
-        setUser(logger.data());
-      }
-    } catch (error) {
-      console.log(error);
-      console.log(error.message);
-      console.error("Error adding document: ", e);
-    }
+    auth.signup(email, fullname, username, password);
   };
 
   return (
@@ -106,7 +88,7 @@ const register = () => {
               <div className="relative">
                 <input
                   name="email"
-                  value={userEmail}
+                  value={registerEmail}
                   type="text"
                   placeholder="Email"
                   className="w-full h-[2.3rem] border-gray-300 rounded-[4px] placeholder:text-sm"
@@ -148,7 +130,9 @@ const register = () => {
                 className={`w-full py-1 mt-3 bg-blue-600 text-white rounded-md width ${
                   disabledButton ? "bg-blue-200 pointer-events-none" : null
                 }`}
-                onClick={(e) => signUpFirebase(e, userEmail, password)}
+                onClick={(e) =>
+                  signUpFirebase(e, registerEmail, fullname, username, password)
+                }
               >
                 Sign Up
               </button>

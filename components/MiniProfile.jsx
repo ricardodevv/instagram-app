@@ -1,9 +1,10 @@
 import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtom";
-import { logOut } from "../src/utils";
+import { useAuth } from "../src/utils";
 
 const MiniProfile = () => {
   const [user, setUser] = useRecoilState(userState);
+  const auth = useAuth();
 
   return (
     <div
@@ -23,7 +24,7 @@ const MiniProfile = () => {
 
       <button
         className="text-blue-400 text-xs font-semibold ml-4"
-        onClick={() => logOut(setUser)}
+        onClick={() => auth.signout()}
       >
         Sign Out
       </button>

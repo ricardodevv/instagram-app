@@ -5,9 +5,18 @@ import Modal from "../components/Modal";
 import CheckIsLogged from "../components/CheckIsLogged";
 import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtom";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const Home = () => {
   const [user, setUser] = useRecoilState(userState);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
 
   return (
     <CheckIsLogged pageTitle="Home">

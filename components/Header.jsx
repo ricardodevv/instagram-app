@@ -9,11 +9,11 @@ import {
 } from "@heroicons/react/outline";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { modalState } from "../atoms/modalAtom";
 import { userState } from "../atoms/userAtom";
 import { menuState } from "../atoms/menuAtom";
-import { closePopUp, logOut } from "../src/utils";
+import { closePopUp, useAuth } from "../src/utils";
 import ShowMenu from "../components/ShowMenu";
 
 const Header = () => {
@@ -22,7 +22,8 @@ const Header = () => {
   const [openModal, setOpenModal] = useRecoilState(modalState);
   const Ref = useRef(null);
   const router = useRouter();
-  const [user, setUser] = useRecoilState(userState);
+  const user = useRecoilValue(userState);
+  const auth = useAuth();
 
   useEffect(() => {
     const clickOutside = (event) => {
@@ -33,15 +34,6 @@ const Header = () => {
       document.removeEventListener("click", clickOutside);
     };
   }, [showPopper]);
-
-  const logOutUser = () => {
-    try {
-      setShowPopper(!showPopper);
-      logOut(setUser);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
@@ -126,7 +118,7 @@ const Header = () => {
                       <button className="btnBlue">View Profile</button>
                       <div>
                         <button
-                          onClick={() => logOutUser()}
+                          onClick={() => auth.signout()}
                           className="btnBlue"
                         >
                           Sign Out
