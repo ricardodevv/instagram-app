@@ -7,16 +7,20 @@ import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtom";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import emailState from "../atoms/emailAtom";
+import loadingState from "../atoms/loadingAtom";
 
 const Home = () => {
   const [user, setUser] = useRecoilState(userState);
+  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
+  const [loading, setLoading] = useRecoilState(loadingState);
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       router.push("/login");
     }
-  }, [user]);
+  }, [loading, user]);
 
   return (
     <CheckIsLogged pageTitle="Home">

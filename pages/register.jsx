@@ -7,11 +7,13 @@ import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import { useAuth } from "../src/utils";
 import CheckIsLogged from "../components/CheckIsLogged";
+import loadingState from "../atoms/loadingAtom";
 
 const register = () => {
   const router = useRouter();
-  const registerEmail = useRecoilValue(emailState);
-  const [user, setUser] = useRecoilState(userState);
+  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
+  const loading = useRecoilValue(loadingState);
+  const user = useRecoilValue(userState);
   const [disabledButton, setDisabledButton] = useState(true);
   const [fullname, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -26,7 +28,7 @@ const register = () => {
 
   const handleEmailOnChange = (e) => {
     e.preventDefault();
-    setUserEmail(e.target.value);
+    setRegisterEmail(e.target.value);
   };
 
   const handleFullNameOnChange = (e) => {
@@ -46,9 +48,9 @@ const register = () => {
 
   if (disabledButton) {
     if (
-      registerEmail.length > 0 ||
-      password.length > 0 ||
-      fullname.length > 0 ||
+      registerEmail.length ||
+      password.length ||
+      fullname.length ||
       username.length > 0
     ) {
       setDisabledButton(!disabledButton);
@@ -71,83 +73,91 @@ const register = () => {
 
   return (
     <CheckIsLogged pageTitle="register">
-      <div className="flex flex-col bg-gray-50 w-screen h-screen items-center justify-center">
-        <div className="bg-white border border-gray-200">
-          <div className="flex flex-col items-center w-[21rem] p-8">
-            <div className="relative flex w-48 h-20">
-              <Image
-                src={"https://links.papareact.com/ocw"}
-                layout="fill"
-                objectFit="contain"
-              />
-            </div>
-            <p className="text-center text-gray-500 text-lg font-medium">
-              Sign up to see photos and videos from your friends.
-            </p>
-            <form className="mt-5 w-full">
-              <div className="relative">
-                <input
-                  name="email"
-                  value={registerEmail}
-                  type="text"
-                  placeholder="Email"
-                  className="w-full h-[2.3rem] border-gray-300 rounded-[4px] placeholder:text-sm"
-                  onChange={(e) => handleEmailOnChange(e)}
+      {!loading && !user ? (
+        <div className="fixed flex flex-col bg-gray-50 w-screen h-screen items-center justify-center">
+          <div className="bg-white border border-gray-200">
+            <div className="flex flex-col items-center w-[21rem] p-8">
+              <div className="relative flex w-48 h-20">
+                <Image
+                  src={"https://links.papareact.com/ocw"}
+                  layout="fill"
+                  objectFit="contain"
                 />
               </div>
-              <div>
-                <input
-                  name="fullname"
-                  value={fullname}
-                  type="text"
-                  placeholder="Full name"
-                  className="inputForm"
-                  onChange={(e) => handleFullNameOnChange(e)}
-                />
-              </div>
-              <div>
-                <input
-                  name="username"
-                  value={username}
-                  type="text"
-                  placeholder="Username"
-                  className="inputForm"
-                  onChange={(e) => handleUsernameOnChange(e)}
-                />
-              </div>
-              <div>
-                <input
-                  name="password"
-                  value={password}
-                  type="password"
-                  placeholder="Password"
-                  className="inputForm"
-                  onChange={(e) => handlePasswordOnChange(e)}
-                />
-              </div>
+              <p className="text-center text-gray-500 text-lg font-medium">
+                Sign up to see photos and videos from your friends.
+              </p>
+              <form className="mt-5 w-full">
+                <div className="relative">
+                  <input
+                    name="email"
+                    value={registerEmail}
+                    type="text"
+                    placeholder="Email"
+                    className="w-full h-[2.3rem] border-gray-300 rounded-[4px] placeholder:text-sm"
+                    onChange={(e) => handleEmailOnChange(e)}
+                  />
+                </div>
+                <div>
+                  <input
+                    name="fullname"
+                    value={fullname}
+                    type="text"
+                    placeholder="Full name"
+                    className="inputForm"
+                    onChange={(e) => handleFullNameOnChange(e)}
+                  />
+                </div>
+                <div>
+                  <input
+                    name="username"
+                    value={username}
+                    type="text"
+                    placeholder="Username"
+                    className="inputForm"
+                    onChange={(e) => handleUsernameOnChange(e)}
+                  />
+                </div>
+                <div>
+                  <input
+                    name="password"
+                    value={password}
+                    type="password"
+                    placeholder="Password"
+                    className="inputForm"
+                    onChange={(e) => handlePasswordOnChange(e)}
+                  />
+                </div>
 
-              <button
-                className={`w-full py-1 mt-3 bg-blue-600 text-white rounded-md width ${
-                  disabledButton ? "bg-blue-200 pointer-events-none" : null
-                }`}
-                onClick={(e) =>
-                  signUpFirebase(e, registerEmail, fullname, username, password)
-                }
-              >
-                Sign Up
-              </button>
-            </form>
+                <button
+                  className={`w-full py-1 mt-3 bg-blue-600 text-white rounded-md width ${
+                    disabledButton ? "bg-blue-200 pointer-events-none" : null
+                  }`}
+                  onClick={(e) =>
+                    signUpFirebase(
+                      e,
+                      registerEmail,
+                      fullname,
+                      username,
+                      password
+                    )
+                  }
+                >
+                  Sign Up
+                </button>
+              </form>
+            </div>
+          </div>
+          <div className="flex text-sm justify-center bg-white border border-gray-200 w-[21rem] p-2 mt-3">
+            <p>You do have an account?</p>
+            <Link href="/login">
+              <a className="ml-1 text-blue-500 font-medium cursor-pointer">
+                Sign in
+              </a>
+            </Link>
           </div>
         </div>
-        <div className="flex text-sm justify-center bg-white border border-gray-200 w-[21rem] p-2 mt-3">
-          <p>You do have an account?</p>
-          <Link href="/login">
-            <a className="ml-1 text-blue-500 font-medium cursor-pointer">
-              Sign in
-            </a>
-          </Link>
-        </div>
-      </div>
+      ) : null}
     </CheckIsLogged>
   );
 };

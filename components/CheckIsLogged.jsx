@@ -1,28 +1,31 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { useRecoilState } from "recoil";
-import { userState } from "../atoms/userAtom";
-import { auth } from "../firebase";
-import { useAuth } from "../src/utils";
-import emailState from "../atoms/emailAtom";
+import { useIfLogged } from "../src/utils";
+import Loading from "./Loading";
 
 const CheckIsLogged = ({ children, pageTitle }) => {
-  const [user, setUser] = useRecoilState(userState);
-  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
-  const router = useRouter();
-  const autho = useAuth();
+  const checkIfCurrentUser = useIfLogged();
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (currrentUser) => {
-      if (currrentUser && !user) {
-        autho.userToFind(currrentUser.email);
-        setRegisterEmail(currrentUser.email);
-      }
-    });
-  }, [user]);
+  // const autho = useAuth();
 
-  return <div>{children}</div>;
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (currrentUser) => {
+  //     if (currrentUser) {
+  //       autho.userToFind(currrentUser.email);
+  //       setRegisterEmail(currrentUser.email);
+  //     }
+  //     if (user) {
+  //       if (loading) {
+  //         setLoading(!loading);
+  //       }
+  //     }
+  //   });
+  // }, [user]);
+
+  return (
+    <div>
+      <Loading />
+      {children}
+    </div>
+  );
 };
 
 export default CheckIsLogged;
