@@ -3,12 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import emailState from "../atoms/emailAtom";
+import { useRecoilValue } from "recoil";
 import loadingState from "../atoms/loadingAtom";
 import { userState } from "../atoms/userAtom";
 import CheckIsLogged from "../components/CheckIsLogged";
 import { useAuth, useIfLogged } from "../src/utils";
+import phoneImg from "../phoneImages";
 
 const login = () => {
   const [changeImg, setChangeImg] = useState(0);
@@ -35,29 +35,6 @@ const login = () => {
     return () => clearInterval(interval);
   }, [changeImg]);
 
-  const phoneImg = [
-    {
-      id: 0,
-      url: "https://www.instagram.com/static/images/homepage/screenshot1.jpg/d6bf0c928b5a.jpg",
-    },
-    {
-      id: 1,
-      url: "https://www.instagram.com/static/images/homepage/screenshot2.jpg/6f03eb85463c.jpg",
-    },
-    {
-      id: 2,
-      url: "https://www.instagram.com/static/images/homepage/screenshot3.jpg/f0c687aa6ec2.jpg",
-    },
-    {
-      id: 3,
-      url: "https://www.instagram.com/static/images/homepage/screenshot4.jpg/842fe5699220.jpg",
-    },
-    {
-      id: 4,
-      url: "https://www.instagram.com/static/images/homepage/screenshot5.jpg/0a2d3016f375.jpg",
-    },
-  ];
-
   const handleEmailOnChange = (e) => {
     e.preventDefault();
     setEmail(e.target.value);
@@ -78,7 +55,8 @@ const login = () => {
     }
   }
 
-  const signInEmail = (email, password) => {
+  const signInEmail = (e, email, password) => {
+    e.preventDefault();
     auth.signinEmailAndPassword(email, password);
   };
 
@@ -164,9 +142,7 @@ const login = () => {
                 </button>
 
                 <div className="flex mt-6 text-sm">
-                  <p class Name="">
-                    Don't have an account yet?
-                  </p>
+                  <p className="">Don't have an account yet?</p>
                   <Link href="/register">
                     <a className="ml-1 text-blue-500 font-medium cursor-pointer">
                       Sign up

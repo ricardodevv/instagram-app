@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
@@ -12,7 +13,6 @@ import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import loadingState from "../atoms/loadingAtom";
 import { auth, db } from "../firebase";
-import Loading from "../components/Loading";
 
 export const closePopUp = (e, statePopUp, Ref, setPopUp) => {
   statePopUp && Ref.current && !Ref.current.contains(e.target)
@@ -99,13 +99,17 @@ export const useAuth = () => {
 
   const signup = async (userEmail, fullname, username, password) => {
     try {
-      if (registerEmail.length === 0) {
-        createUserWithEmailAndPassword(auth, userEmail, password);
+      if (registerEmail.length > 0) {
         createUser(userEmail, fullname, username);
         await userToFind(userEmail);
       } else {
-        createUser(userEmail, fullname, username);
-        await userToFind(userEmail);
+        const userCreated = await createUserWithEmailAndPassword(
+          auth,
+          userEmail,
+          password
+        );
+        createUser(userCreated.user.email, fullname, username);
+        await userToFind(userCreated.user.email);
       }
     } catch (error) {
       console.log(error);

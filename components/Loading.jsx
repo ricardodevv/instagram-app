@@ -1,6 +1,4 @@
-import Image from "next/image";
 import { useRecoilState } from "recoil";
-import emailState from "../atoms/emailAtom";
 import loadingState from "../atoms/loadingAtom";
 
 const Loading = () => {

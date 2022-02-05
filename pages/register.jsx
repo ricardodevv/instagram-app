@@ -15,6 +15,9 @@ const register = () => {
   const loading = useRecoilValue(loadingState);
   const user = useRecoilValue(userState);
   const [disabledButton, setDisabledButton] = useState(true);
+  const [email, setEmail] = useState(
+    registerEmail.length > 0 ? registerEmail : ""
+  );
   const [fullname, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +31,7 @@ const register = () => {
 
   const handleEmailOnChange = (e) => {
     e.preventDefault();
-    setRegisterEmail(e.target.value);
+    setEmail(e.target.value);
   };
 
   const handleFullNameOnChange = (e) => {
@@ -91,7 +94,7 @@ const register = () => {
                 <div className="relative">
                   <input
                     name="email"
-                    value={registerEmail}
+                    value={email}
                     type="text"
                     placeholder="Email"
                     className="w-full h-[2.3rem] border-gray-300 rounded-[4px] placeholder:text-sm"
@@ -134,13 +137,7 @@ const register = () => {
                     disabledButton ? "bg-blue-200 pointer-events-none" : null
                   }`}
                   onClick={(e) =>
-                    signUpFirebase(
-                      e,
-                      registerEmail,
-                      fullname,
-                      username,
-                      password
-                    )
+                    signUpFirebase(e, email, fullname, username, password)
                   }
                 >
                   Sign Up
