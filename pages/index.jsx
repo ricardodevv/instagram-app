@@ -9,7 +9,7 @@ const Home = () => {
   const user = useRecoilValue(userState);
 
   return (
-    <CheckIsLogged pageTitle="Home">
+    <CheckIsLogged>
       <Layout pageTitle="Home - Instagram">
         <div>
           {user ? (

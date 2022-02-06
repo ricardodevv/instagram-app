@@ -18,7 +18,7 @@ const Layout = ({ children, pageTitle }) => {
   }, [loading, user]);
 
   return (
-    <div>
+    <div className="bg-[#fafafa]">
       <Head>
         <title>{pageTitle}</title>
       </Head>

@@ -8,6 +8,7 @@ import { userState } from "../atoms/userAtom";
 import { useAuth } from "../src/utils";
 import CheckIsLogged from "../components/CheckIsLogged";
 import loadingState from "../atoms/loadingAtom";
+import Head from "next/head";
 
 const register = () => {
   const router = useRouter();
@@ -75,7 +76,10 @@ const register = () => {
   };
 
   return (
-    <CheckIsLogged pageTitle="register">
+    <CheckIsLogged>
+      <Head>
+        <title>Instagram - Register</title>
+      </Head>
       {!loading && !user ? (
         <div className="fixed flex flex-col bg-gray-50 w-screen h-screen items-center justify-center">
           <div className="bg-white border border-gray-200">

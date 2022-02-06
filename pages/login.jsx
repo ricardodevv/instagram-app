@@ -9,6 +9,7 @@ import { userState } from "../atoms/userAtom";
 import CheckIsLogged from "../components/CheckIsLogged";
 import { useAuth, useIfLogged } from "../src/utils";
 import phoneImg from "../phoneImages";
+import Head from "next/head";
 
 const login = () => {
   const [changeImg, setChangeImg] = useState(0);
@@ -65,7 +66,10 @@ const login = () => {
   };
 
   return (
-    <CheckIsLogged pageTitle="login">
+    <CheckIsLogged>
+      <Head>
+        <title>Instagram</title>
+      </Head>
       {!loading && !user ? (
         <div className="flex w-screen justify-center items-center bg-gray-50">
           <article className="flex mt-4 justify-around">
