@@ -1,49 +1,30 @@
-import Head from "next/head";
-import Header from "../components/Header";
 import Feed from "../components/Feed";
 import Modal from "../components/Modal";
+import Layout from "../components/Layout";
 import CheckIsLogged from "../components/CheckIsLogged";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userState } from "../atoms/userAtom";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import loadingState from "../atoms/loadingAtom";
 
 const Home = () => {
-  const [user, setUser] = useRecoilState(userState);
-  const [loading, setLoading] = useRecoilState(loadingState);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [loading, user]);
+  const user = useRecoilValue(userState);
 
   return (
     <CheckIsLogged pageTitle="Home">
-      <div>
-        {user ? (
-          <div className="bg-gray-50 h-screen">
-            {/* {user.length > 0 ? ( */}
-            <div>
-              <Head>
-                <title>Instagram</title>
-              </Head>
+      <Layout pageTitle="Home - Instagram">
+        <div>
+          {user ? (
+            <div className="bg-gray-50">
+              <div>
+                {/* // * Feed  */}
+                <Feed />
 
-              {/* // * Header */}
-              <Header />
-
-              {/* // * Feed  */}
-              <Feed />
-
-              {/* // * Modal */}
-              <Modal />
+                {/* // * Modal */}
+                <Modal />
+              </div>
             </div>
-            {/* ) : null} */}
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      </Layout>
     </CheckIsLogged>
   );
 };

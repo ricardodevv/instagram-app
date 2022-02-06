@@ -15,6 +15,7 @@ import { userState } from "../atoms/userAtom";
 import { menuState } from "../atoms/menuAtom";
 import { closePopUp, useAuth } from "../src/utils";
 import ShowMenu from "../components/ShowMenu";
+import Link from "next/link";
 
 const Header = () => {
   const [showPopper, setShowPopper] = useState(false);
@@ -102,7 +103,7 @@ const Header = () => {
 
               <div className="relative">
                 <img
-                  src="sugookun.png"
+                  src={user.profilePic ? user.profilePic : "profileEmpty.png"}
                   alt="profile-pic"
                   className="h-6 rounded-full cursor-pointer"
                   onClick={() => setShowPopper(!showPopper)}
@@ -115,7 +116,9 @@ const Header = () => {
                   >
                     <div className="relative">
                       <ChevronUpIcon className="absolute -top-11 left-5 w-8 stroke-gray-600" />
-                      <button className="btnBlue">View Profile</button>
+                      <Link href="/profile">
+                        <p className="btnBlue">View Profile</p>
+                      </Link>
                       <div>
                         <button
                           onClick={() => auth.signout()}
@@ -129,9 +132,7 @@ const Header = () => {
                 ) : null}
               </div>
             </>
-          ) : (
-            <button onClick={signIn}>Sign In</button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

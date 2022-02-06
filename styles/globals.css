@@ -18,7 +18,7 @@
   }
 
   .btnBlue {
-    @apply text-blue-400 text-sm font-semibold hover:underline;
+    @apply text-blue-400 text-sm font-semibold hover:underline cursor-pointer;
   }
 
   .storiesCircle {

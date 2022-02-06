@@ -1,7 +1,10 @@
 import { PlusCircleIcon } from "@heroicons/react/outline";
+import { useRecoilState } from "recoil";
+import { userState } from "../atoms/userAtom";
 import people from "../src/people";
 
 const Stories = () => {
+  const [user, setUser] = useRecoilState(userState);
   return (
     <div
       className="flex space-x-3 p-6 bg-white mt-8 
@@ -13,7 +16,10 @@ const Stories = () => {
           className="relative hover:scale-110 transition-all transform
         duration-200 ease-out active:scale-95 cursor-pointer"
         >
-          <img src="duck.jpg" className="bg-white rounded-full" />
+          <img
+            src={user.profielPic ? user.profilePic : "profileEmpty.png"}
+            className="bg-white rounded-full"
+          />
           <PlusCircleIcon className="absolute w-6 top-8 left-8 stroke-white fill-blue-600" />
         </div>
         <p className="text-xs w-14 truncate text-center">Your stories</p>
