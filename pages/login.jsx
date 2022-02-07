@@ -71,8 +71,8 @@ const login = () => {
         <title>Instagram</title>
       </Head>
       {!loading && !user ? (
-        <div className="flex w-screen justify-center items-center bg-gray-50">
-          <article className="flex mt-4 justify-around">
+        <div className="flex w-screen h-screen justify-center items-center bg-gray-50">
+          <article className="flex justify-around">
             <div className="relative min-w-8 hidden md:inline-grid">
               <img src="https://www.instagram.com/static/images/homepage/home-phones.png/43cc71bb1b43.png" />
               {phoneImg.map((el) => (

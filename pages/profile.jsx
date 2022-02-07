@@ -5,13 +5,18 @@ import CheckIsLogged from "../components/CheckIsLogged";
 import Layout from "../components/Layout";
 import Link from "next/link";
 import { useState } from "react";
+import {
+  BookmarkIcon,
+  PhotographIcon,
+  TagIcon,
+} from "@heroicons/react/outline";
 
 const profile = () => {
   const user = useRecoilValue(userState);
   const toggleSection = [
-    { name: "POSTS", id: 1 },
-    { name: "SAVED", id: 2 },
-    { name: "TAGS", id: 3 },
+    { name: "POSTS", icon: <PhotographIcon />, id: 1 },
+    { name: "SAVED", icon: <BookmarkIcon />, id: 2 },
+    { name: "TAGS", icon: <TagIcon />, id: 3 },
   ];
   const [activeToggle, setActiveToggle] = useState(1);
 
@@ -59,18 +64,37 @@ const profile = () => {
               </div>
             </div>
             <div className="flex justify-center w-full border-t border-gray-300 my-6">
-              <div className="flex space-x-20">
+              <div className="flex space-x-28">
                 {toggleSection.map((toggle) => (
                   <button
                     key={toggle.id}
-                    className={`mt-[-1px] border-t border-gray-300 ${
+                    className={`mt-[-1px] py-4 border-t border-gray-300 transition ease-in ${
                       activeToggle === toggle.id
-                        ? "border-t border-black"
+                        ? "border-t border-gray-700"
                         : null
                     }`}
                     onClick={(e) => handleToggleClick(e, toggle)}
                   >
-                    {toggle.name}
+                    <div className="flex space-x-3 items-center">
+                      <div
+                        className={`w-5 ${
+                          activeToggle === toggle.id
+                            ? "text-black"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {toggle.icon}
+                      </div>
+                      <p
+                        className={`text-sm text-gray-700 font-medium ${
+                          activeToggle === toggle.id
+                            ? "text-black"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {toggle.name}
+                      </p>
+                    </div>
                   </button>
                 ))}
               </div>
