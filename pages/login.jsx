@@ -88,11 +88,7 @@ const login = () => {
             <div>
               <div className="flex flex-col mt-8 p-8 border border-gray-300 items-center bg-white">
                 <div className="relative flex w-44 h-24">
-                  <Image
-                    src="/instagramlogo.png"
-                    layout="fill"
-                    objectFit="contain"
-                  />
+                  <Image src="/IgLogo.png" layout="fill" objectFit="contain" />
                 </div>
                 <form action="" className="mt-5 w-64">
                   <div className="relative">

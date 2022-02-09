@@ -44,11 +44,7 @@ const Header = () => {
           onClick={() => router.push("/")}
           className="relative hidden lg:inline-grid w-24 cursor-pointer"
         >
-          <Image
-            src={"https://links.papareact.com/ocw"}
-            layout="fill"
-            objectFit="contain"
-          />
+          <Image src="/IgLogo.png" layout="fill" objectFit="contain" />
         </div>
 
         <div
