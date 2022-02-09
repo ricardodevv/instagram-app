@@ -6,5 +6,6 @@ This is a Instagram clone using Next.js, Tailwind CSS and Firebase.
 
 ```bash
 npm -i to install dependencies  
+
 npm run dev to run localhost
 ```
