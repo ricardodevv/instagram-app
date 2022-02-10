@@ -17,9 +17,6 @@ const Home = () => {
               <div>
                 {/* // * Feed  */}
                 <Feed />
-
-                {/* // * Modal */}
-                <Modal />
               </div>
             </div>
           ) : null}

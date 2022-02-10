@@ -68,7 +68,7 @@ const profile = () => {
                 {toggleSection.map((toggle) => (
                   <button
                     key={toggle.id}
-                    className={`mt-[-1px] py-4 border-t border-gray-300 transition ease-in ${
+                    className={`mt-[-1px] py-2 border-t border-gray-300 transition ease-in ${
                       activeToggle === toggle.id
                         ? "border-t border-gray-700"
                         : null

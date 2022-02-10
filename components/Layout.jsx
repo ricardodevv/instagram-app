@@ -5,6 +5,7 @@ import { useRecoilValue } from "recoil";
 import loadingState from "../atoms/loadingAtom";
 import { userState } from "../atoms/userAtom";
 import Header from "../components/Header";
+import Modal from "./Modal";
 
 const Layout = ({ children, pageTitle }) => {
   const user = useRecoilValue(userState);
@@ -18,11 +19,14 @@ const Layout = ({ children, pageTitle }) => {
   }, [loading, user]);
 
   return (
-    <div className="bg-[#fafafa]">
+    <div className="h-screen w-screen bg-[#fafafa] overflow-x-auto">
       <Head>
         <title>{pageTitle}</title>
       </Head>
       {user && <Header />}
+
+      {/* // * Modal */}
+      <Modal />
       {children}
     </div>
   );

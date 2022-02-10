@@ -1,4 +1,4 @@
-import { CameraIcon } from "@heroicons/react/outline";
+import { CameraIcon, PhotographIcon } from "@heroicons/react/outline";
 import {
   addDoc,
   collection,
@@ -65,29 +65,35 @@ const Modal = () => {
     };
   };
 
+  const closeModal = (e) => {
+    closePopUp(e, openModal, modalRef, setOpenModal);
+    setSelectedPicture(null);
+  };
+
   return (
     <div
-      onClick={(e) => closePopUp(e, openModal, modalRef, setOpenModal)}
-      className={`fixed inset-0 flex items-center justify-center 
-        bg-black bg-opacity-90 
+      onClick={(e) => closeModal(e)}
+      className={`fixed z-50 inset-0 flex items-center justify-center 
+        bg-black bg-opacity-80 
           ${openModal ? "inline-grid" : "hidden"}`}
     >
       {openModal && (
         <div
           ref={modalRef}
-          className="relative w-screen h-screen top-12 sm:w-[40rem] sm:mx-auto bg-white"
+          className="relative rounded-2xl mt-4 w-screen sm:w-[25rem] sm:mx-auto bg-white"
         >
-          <div className="m-8">
-            <h1 className="text-3xl text-gray-800 mb-2 font-medium">
-              Add a Post
+          <div className="flex justify-center border-b border-gray-300">
+            <h1 className="m-2 text-md text-gray-600 mb-2 font-medium">
+              Add a new post
             </h1>
-            <div className="flex flex-col items-center justify-center">
+          </div>
+          <div>
+            <div className="flex flex-col py-24 items-center justify-center">
               <div
-                className="flex w-full h-[15rem] my-4 justify-center border-2 border-dashed 
+                className="flex flex-col w-full justify-center items-center 
               border-gray-300 transition ease-linear duration-150 
                 hover:border-solid hover:border-gray-600 
-                hover:rounded-md cursor-pointer"
-                onClick={() => filePickerRef.current.click()}
+                hover:rounded-md"
               >
                 {selectedPicture ? (
                   <img
@@ -97,9 +103,18 @@ const Modal = () => {
                     onClick={() => setSelectedPicture(null)}
                   />
                 ) : (
-                  <CameraIcon className="w-14 m-10 text-gray-600" />
+                  <div className="flex flex-col justify-center items-center">
+                    <PhotographIcon className="w-18 m-10 text-gray-600" />
+                    <button
+                      className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
+                      onClick={() => filePickerRef.current.click()}
+                    >
+                      Select file from computer
+                    </button>
+                  </div>
                 )}
               </div>
+
               <div>
                 <input
                   ref={filePickerRef}
@@ -108,22 +123,13 @@ const Modal = () => {
                   onChange={addPost}
                 />
               </div>
-              <div className="flex flex-col w-full align-start">
-                <h3 className="font-medium">Description</h3>
+              {/* <div className="flex flex-col w-full align-start">
                 <input
                   placeholder="Add a description..."
                   ref={captionRef}
                   className="border-none flex-1 my-1 focus:ring-0 outline-none"
                 />
-                <div className="flex mt-5 space-x-4 justify-end">
-                  <button className="postBtn text-white bg-black">
-                    Cancel
-                  </button>
-                  <button className="postBtn text-black" onClick={uploadPost}>
-                    Post
-                  </button>
-                </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

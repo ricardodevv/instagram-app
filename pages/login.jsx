@@ -113,8 +113,8 @@ const login = () => {
                   </div>
 
                   <button
-                    className={`w-full py-1 mt-2 bg-blue-600 text-white rounded-md width ${
-                      disabledSignIn ? "bg-blue-300 pointer-events-none" : null
+                    className={`w-full py-1 mt-2 bg-blue-600 text-white rounded-md ${
+                      disabledSignIn ? "bg-blue-200 pointer-events-none" : null
                     }`}
                     onClick={(e) => signInEmail(e, email, password)}
                   >
