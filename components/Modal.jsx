@@ -7,7 +7,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { modalState } from "../atoms/modalAtom";
 import { userState } from "../atoms/userAtom";
@@ -21,7 +21,23 @@ const Modal = () => {
   const filePickerRef = useRef(null);
   const [selectedPicture, setSelectedPicture] = useState(null);
   const [loading, setLoading] = useState(false);
+  const textAreaRef = useRef(null);
+  const [comment, setCommentValue] = useState("");
+  const [textAreaHeight, setTextAreaHeight] = useState("");
   const user = useRecoilValue(userState);
+
+  useEffect(() => {
+    if (comment.length > 0) {
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      setTextAreaHeight(`${scrollHeight}px`);
+      console.log(textAreaHeight);
+    }
+    // setTextAreaHeight("");
+    // textAreaRef.current.scrollHeight !== undefined
+    // console.log(textAreaRef.current.scrollHeight);
+    // const scrollHeight = textAreaRef.current.scrollHeight;
+    // setTextAreaHeight(scrollHeight + "px");
+  }, [comment]);
 
   const uploadPost = async () => {
     if (loading) {
@@ -66,74 +82,67 @@ const Modal = () => {
   };
 
   const closeModal = (e) => {
-    closePopUp(e, openModal, modalRef, setOpenModal);
-    setSelectedPicture(null);
+    closePopUp(e, openModal, modalRef, setOpenModal, setSelectedPicture);
   };
 
   return (
     <div
       onClick={(e) => closeModal(e)}
-      className={`fixed z-50 inset-0 flex items-center justify-center 
-        bg-black bg-opacity-80 
-          ${openModal ? "inline-grid" : "hidden"}`}
+      className={`fixed inset-0 flex items-center justify-center 
+        bg-black bg-opacity-80
+          ${openModal ? "z-50" : "z-[-1]"}`}
     >
-      {openModal && (
-        <div
-          ref={modalRef}
-          className="relative rounded-2xl mt-4 w-screen sm:w-[25rem] sm:mx-auto bg-white"
-        >
-          <div className="flex justify-center border-b border-gray-300">
-            <h1 className="m-2 text-md text-gray-600 mb-2 font-medium">
-              Add a new post
-            </h1>
-          </div>
-          <div>
-            <div className="flex flex-col py-24 items-center justify-center">
-              <div
-                className="flex flex-col w-full justify-center items-center 
-              border-gray-300 transition ease-linear duration-150 
-                hover:border-solid hover:border-gray-600 
-                hover:rounded-md"
-              >
-                {selectedPicture ? (
-                  <img
-                    src={selectedPicture}
-                    className="w-full object-contain cursor-pointer"
-                    alt="selected picture"
-                    onClick={() => setSelectedPicture(null)}
-                  />
-                ) : (
-                  <div className="flex flex-col justify-center items-center">
-                    <PhotographIcon className="w-18 m-10 text-gray-600" />
-                    <button
-                      className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
-                      onClick={() => filePickerRef.current.click()}
-                    >
-                      Select file from computer
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <input
-                  ref={filePickerRef}
-                  type="file"
-                  hidden
-                  onChange={addPost}
-                />
-              </div>
-              {/* <div className="flex flex-col w-full align-start">
-                <input
-                  placeholder="Add a description..."
-                  ref={captionRef}
-                  className="border-none flex-1 my-1 focus:ring-0 outline-none"
-                />
-              </div> */}
-            </div>
-          </div>
+      <div
+        ref={modalRef}
+        className={`relative flex flex-col w-fit rounded-2xl mt-4 sm:mx-auto bg-white transition-all duration-200 ease-in ${
+          openModal ? "opacity-100 scale-100" : "opacity-0 scale-75"
+        }`}
+      >
+        <div className="flex justify-center border-b border-gray-300">
+          <h1 className="m-2 text-md text-gray-700 mb-2 font-medium">
+            Add a new post
+          </h1>
         </div>
-      )}
+        <div>
+          {selectedPicture ? (
+            <div className="flex w-screen sm:min-w-[40rem] sm:max-w-[45rem] sm:h-fit p-1">
+              <img
+                src={selectedPicture}
+                className="flex-1 max-h-[24rem] object-contain"
+                alt="selected picture"
+              />
+              <div className="flex flex-col flex-1 mt-2">
+                <h3 className="font-semibold text-gray-900 ml-3">
+                  Description
+                </h3>
+                <textarea
+                  ref={textAreaRef}
+                  value={comment}
+                  className={`mt-2 w-full
+                     resize-none overflow-auto border-0 outline-none focus:ring-0 text-gray-700`}
+                  style={{ height: textAreaHeight }}
+                  placeholder="Add a description..."
+                  onChange={(e) => setCommentValue(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto my-24">
+              <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
+              <button
+                className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
+                onClick={() => filePickerRef.current.click()}
+              >
+                Select file from computer
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <input ref={filePickerRef} type="file" hidden onChange={addPost} />
+        </div>
+      </div>
     </div>
   );
 };
