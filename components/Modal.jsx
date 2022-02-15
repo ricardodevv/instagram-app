@@ -52,8 +52,15 @@ const Modal = () => {
     }
   }, [comment, selectedPicture]);
 
+  console.log(selectedPicture);
+
   const backButton = (e) => {
-    setModalSection(modalSection - 1);
+    if (modalSection === 2) {
+      setSelectedPicture(null);
+      setModalSection(modalSection - 1);
+    } else {
+      setModalSection(modalSection - 1);
+    }
   };
 
   const uploadPost = async () => {
@@ -65,7 +72,7 @@ const Modal = () => {
     // 1) Create a post and add to firestore 'post' collection
     const docRef = await addDoc(collection(db, "posts"), {
       username: user.username,
-      caption: captionRef.current.value,
+      caption: textAreaRef.current.value,
       profileImg: user.profilePic,
       timestamp: serverTimestamp(),
     });
@@ -107,14 +114,16 @@ const Modal = () => {
     >
       <div
         ref={modalRef}
-        className={`relative flex flex-col w-fit rounded-2xl mt-4 sm:mx-auto bg-white transition-all duration-200 ease-in ${
+        className={`relative w-screen flex flex-col rounded-2xl mt-4 sm:mx-auto bg-white transition-all duration-200 ease-in ${
           openModal ? "opacity-100 scale-100" : "opacity-0 scale-75"
+        } ${
+          modalSection > 1 ? "md:w-8/12 md:h-6/12 lg:min-w-[60rem]" : "w-fit"
         }`}
       >
         <div className="flex justify-between border-b border-gray-300">
           {modalSection > 1 && (
             <button onClick={(e) => backButton(e)}>
-              <ArrowSmLeftIcon className="w-8 ml-3" />
+              <ArrowSmLeftIcon className="w-7 ml-3" />
             </button>
           )}
           <h1 className="w-full text-center m-2 text-md text-gray-700 mb-2 font-medium">
@@ -122,30 +131,33 @@ const Modal = () => {
           </h1>
           {modalSection > 1 && (
             <button>
-              <p className="text-blue-500 text-sm font-medium mr-5">Next</p>
+              <p className="text-blue-500 font-medium mr-5">Post</p>
             </button>
           )}
         </div>
-        {modalSection === 1 && (
-          <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto my-24">
-            <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
-            <button
-              className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
-              onClick={() => filePickerRef.current.click()}
-            >
-              Select file from computer
-            </button>
-          </div>
-        )}
         <div>
+          {modalSection === 1 && (
+            <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto py-32">
+              <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
+              <button
+                className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
+                onClick={() => filePickerRef.current.click()}
+              >
+                Select file from computer
+              </button>
+            </div>
+          )}
           {modalSection === 2 && (
-            <div className="flex flex-col sm:flex sm:flex-row w-screen sm:min-w-[40rem] sm:min-h-[20rem] sm:max-w-[45rem] sm:h-fit p-1">
-              <img
-                src={selectedPicture}
-                className="flex-1 p-4 self-center max-h-[15rem] max-w-[15rem] sm:max-h-[25rem] sm:max-w-[25rem] object-contain"
-                alt="selected picture"
-              />
-              <div className="flex-1 flex-col sm:border-l border-gray-400">
+            <div className="flex flex-col lg:flex lg:flex-row w-full lg:h-fit p-1">
+              <div className="lg:max-w-[40rem]">
+                <img
+                  src={selectedPicture}
+                  className="flex-1 p-4 self-center h-auto object-contain"
+                  alt="selected picture"
+                />
+              </div>
+
+              <div className="flex-1 flex-col lg:border-l border-gray-400">
                 <h3 className="font-semibold text-gray-900 ml-3 mt-4">
                   Description
                 </h3>

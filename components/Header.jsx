@@ -40,7 +40,7 @@ const Header = () => {
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
       {/* // *Logo  */}
-      <div className="flex justify-between max-w-4xl mx-5 xl:mx-auto">
+      <div className="flex mx-10 lg:mx-auto justify-between max-w-4xl xl:max-w-5xl">
         <div
           onClick={() => router.push("/")}
           className="relative hidden lg:inline-grid w-24 cursor-pointer"
