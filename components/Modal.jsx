@@ -1,4 +1,10 @@
-import { CameraIcon, PhotographIcon } from "@heroicons/react/outline";
+import {
+  ArrowCircleRightIcon,
+  ArrowSmLeftIcon,
+  ArrowSmRightIcon,
+  CameraIcon,
+  PhotographIcon,
+} from "@heroicons/react/outline";
 import {
   addDoc,
   collection,
@@ -12,32 +18,43 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { modalState } from "../atoms/modalAtom";
 import { userState } from "../atoms/userAtom";
 import { db, storage } from "../firebase";
-import { closePopUp } from "../src/utils";
+import { useClosePopUp } from "../src/utils";
+import postPicture from "../atoms/postPicture";
 
 const Modal = () => {
   const [openModal, setOpenModal] = useRecoilState(modalState);
   const modalRef = useRef(null);
   const captionRef = useRef(null);
   const filePickerRef = useRef(null);
-  const [selectedPicture, setSelectedPicture] = useState(null);
+  const [selectedPicture, setSelectedPicture] = useRecoilState(postPicture);
   const [loading, setLoading] = useState(false);
   const textAreaRef = useRef(null);
   const [comment, setCommentValue] = useState("");
   const [textAreaHeight, setTextAreaHeight] = useState("");
   const user = useRecoilValue(userState);
+  const popUp = useClosePopUp();
+  const [modalSection, setModalSection] = useState(1);
 
   useEffect(() => {
-    if (comment.length > 0) {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "0px";
       const scrollHeight = textAreaRef.current.scrollHeight;
-      setTextAreaHeight(`${scrollHeight}px`);
+      textAreaRef.current.style.height = `${scrollHeight}px`;
       console.log(textAreaHeight);
     }
-    // setTextAreaHeight("");
-    // textAreaRef.current.scrollHeight !== undefined
-    // console.log(textAreaRef.current.scrollHeight);
-    // const scrollHeight = textAreaRef.current.scrollHeight;
-    // setTextAreaHeight(scrollHeight + "px");
-  }, [comment]);
+
+    if (selectedPicture && modalSection === 1) {
+      setModalSection(modalSection + 1);
+    }
+
+    if (!selectedPicture && modalSection !== 1) {
+      setModalSection(1);
+    }
+  }, [comment, selectedPicture]);
+
+  const backButton = (e) => {
+    setModalSection(modalSection - 1);
+  };
 
   const uploadPost = async () => {
     if (loading) {
@@ -81,13 +98,9 @@ const Modal = () => {
     };
   };
 
-  const closeModal = (e) => {
-    closePopUp(e, openModal, modalRef, setOpenModal, setSelectedPicture);
-  };
-
   return (
     <div
-      onClick={(e) => closeModal(e)}
+      onClick={(e) => popUp.closePopUp(e, openModal, modalRef, setOpenModal)}
       className={`fixed inset-0 flex items-center justify-center 
         bg-black bg-opacity-80
           ${openModal ? "z-50" : "z-[-1]"}`}
@@ -98,43 +111,54 @@ const Modal = () => {
           openModal ? "opacity-100 scale-100" : "opacity-0 scale-75"
         }`}
       >
-        <div className="flex justify-center border-b border-gray-300">
-          <h1 className="m-2 text-md text-gray-700 mb-2 font-medium">
+        <div className="flex justify-between border-b border-gray-300">
+          {modalSection > 1 && (
+            <button onClick={(e) => backButton(e)}>
+              <ArrowSmLeftIcon className="w-8 ml-3" />
+            </button>
+          )}
+          <h1 className="w-full text-center m-2 text-md text-gray-700 mb-2 font-medium">
             Add a new post
           </h1>
+          {modalSection > 1 && (
+            <button>
+              <p className="text-blue-500 text-sm font-medium mr-5">Next</p>
+            </button>
+          )}
         </div>
+        {modalSection === 1 && (
+          <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto my-24">
+            <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
+            <button
+              className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
+              onClick={() => filePickerRef.current.click()}
+            >
+              Select file from computer
+            </button>
+          </div>
+        )}
         <div>
-          {selectedPicture ? (
-            <div className="flex w-screen sm:min-w-[40rem] sm:max-w-[45rem] sm:h-fit p-1">
+          {modalSection === 2 && (
+            <div className="flex flex-col sm:flex sm:flex-row w-screen sm:min-w-[40rem] sm:min-h-[20rem] sm:max-w-[45rem] sm:h-fit p-1">
               <img
                 src={selectedPicture}
-                className="flex-1 max-h-[24rem] object-contain"
+                className="flex-1 p-4 self-center max-h-[15rem] max-w-[15rem] sm:max-h-[25rem] sm:max-w-[25rem] object-contain"
                 alt="selected picture"
               />
-              <div className="flex flex-col flex-1 mt-2">
-                <h3 className="font-semibold text-gray-900 ml-3">
+              <div className="flex-1 flex-col sm:border-l border-gray-400">
+                <h3 className="font-semibold text-gray-900 ml-3 mt-4">
                   Description
                 </h3>
                 <textarea
+                  rows="1"
                   ref={textAreaRef}
                   value={comment}
-                  className={`mt-2 w-full
+                  className={`mt-1 w-full
                      resize-none overflow-auto border-0 outline-none focus:ring-0 text-gray-700`}
-                  style={{ height: textAreaHeight }}
                   placeholder="Add a description..."
                   onChange={(e) => setCommentValue(e.target.value)}
                 />
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto my-24">
-              <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
-              <button
-                className="bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-md cursor-pointer"
-                onClick={() => filePickerRef.current.click()}
-              >
-                Select file from computer
-              </button>
             </div>
           )}
         </div>

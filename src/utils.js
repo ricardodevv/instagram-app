@@ -13,18 +13,19 @@ import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import loadingState from "../atoms/loadingAtom";
 import { auth, db } from "../firebase";
+import postPicture from "../atoms/postPicture";
 
-export const closePopUp = (
-  e,
-  statePopUp,
-  Ref,
-  setPopUp,
-  setSelectedPicture
-) => {
-  if (statePopUp && Ref.current && !Ref.current.contains(e.target)) {
-    setPopUp(!statePopUp);
-    setSelectedPicture(null);
-  }
+export const useClosePopUp = () => {
+  const [selectedPicture, setSelectedPicture] = useRecoilState(postPicture);
+
+  const closePopUp = (e, statePopUp, Ref, setPopUp) => {
+    if (statePopUp && Ref.current && !Ref.current.contains(e.target)) {
+      setPopUp(!statePopUp);
+      setSelectedPicture(null);
+    }
+  };
+
+  return { closePopUp };
 };
 
 export const createUser = async (userEmail, fullname, username) => {

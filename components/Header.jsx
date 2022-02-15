@@ -13,7 +13,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { modalState } from "../atoms/modalAtom";
 import { userState } from "../atoms/userAtom";
 import { menuState } from "../atoms/menuAtom";
-import { closePopUp, useAuth } from "../src/utils";
+import { useAuth, useClosePopUp } from "../src/utils";
 import ShowMenu from "../components/ShowMenu";
 import Link from "next/link";
 
@@ -25,10 +25,11 @@ const Header = () => {
   const router = useRouter();
   const user = useRecoilValue(userState);
   const auth = useAuth();
+  const popUp = useClosePopUp();
 
   useEffect(() => {
     const clickOutside = (event) => {
-      closePopUp(event, showPopper, Ref, setShowPopper);
+      popUp.closePopUp(event, showPopper, Ref, setShowPopper);
     };
     document.addEventListener("click", clickOutside);
     return () => {
