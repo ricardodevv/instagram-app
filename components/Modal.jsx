@@ -1,10 +1,4 @@
-import {
-  ArrowCircleRightIcon,
-  ArrowSmLeftIcon,
-  ArrowSmRightIcon,
-  CameraIcon,
-  PhotographIcon,
-} from "@heroicons/react/outline";
+import { ArrowSmLeftIcon, PhotographIcon } from "@heroicons/react/outline";
 import {
   addDoc,
   collection,
@@ -24,13 +18,11 @@ import postPicture from "../atoms/postPicture";
 const Modal = () => {
   const [openModal, setOpenModal] = useRecoilState(modalState);
   const modalRef = useRef(null);
-  const captionRef = useRef(null);
   const filePickerRef = useRef(null);
   const [selectedPicture, setSelectedPicture] = useRecoilState(postPicture);
   const [loading, setLoading] = useState(false);
   const textAreaRef = useRef(null);
   const [comment, setCommentValue] = useState("");
-  const [textAreaHeight, setTextAreaHeight] = useState("");
   const user = useRecoilValue(userState);
   const popUp = useClosePopUp();
   const [modalSection, setModalSection] = useState(1);
@@ -40,7 +32,6 @@ const Modal = () => {
       textAreaRef.current.style.height = "0px";
       const scrollHeight = textAreaRef.current.scrollHeight;
       textAreaRef.current.style.height = `${scrollHeight}px`;
-      console.log(textAreaHeight);
     }
 
     if (selectedPicture && modalSection === 1) {
@@ -52,8 +43,6 @@ const Modal = () => {
     }
   }, [comment, selectedPicture]);
 
-  console.log(selectedPicture);
-
   const backButton = (e) => {
     if (modalSection === 2) {
       setSelectedPicture(null);
@@ -61,6 +50,11 @@ const Modal = () => {
     } else {
       setModalSection(modalSection - 1);
     }
+  };
+
+  const handleComment = (e) => {
+    e.preventDefault();
+    setCommentValue(e.target.value);
   };
 
   const uploadPost = async () => {
@@ -72,9 +66,9 @@ const Modal = () => {
     // 1) Create a post and add to firestore 'post' collection
     const docRef = await addDoc(collection(db, "posts"), {
       username: user.username,
-      caption: textAreaRef.current.value,
-      profileImg: user.profilePic,
+      description: comment,
       timestamp: serverTimestamp(),
+      comments: "",
     });
 
     console.log("New doc added with ID", docRef.id);
@@ -130,12 +124,12 @@ const Modal = () => {
             Add a new post
           </h1>
           {modalSection > 1 && (
-            <button>
+            <button onClick={(e) => uploadPost()}>
               <p className="text-blue-500 font-medium mr-5">Post</p>
             </button>
           )}
         </div>
-        <div>
+        <div className="flex lg:h-[30rem]">
           {modalSection === 1 && (
             <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto py-32">
               <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
@@ -148,8 +142,8 @@ const Modal = () => {
             </div>
           )}
           {modalSection === 2 && (
-            <div className="flex flex-col lg:flex lg:flex-row w-full lg:h-fit p-1">
-              <div className="lg:max-w-[40rem]">
+            <div className="flex flex-col lg:flex lg:flex-row w-full lg:h-full p-1">
+              <div className="flex items-center lg:max-w-[40rem] p-2">
                 <img
                   src={selectedPicture}
                   className="flex-1 p-4 self-center h-auto object-contain"
@@ -168,7 +162,7 @@ const Modal = () => {
                   className={`mt-1 w-full
                      resize-none overflow-auto border-0 outline-none focus:ring-0 text-gray-700`}
                   placeholder="Add a description..."
-                  onChange={(e) => setCommentValue(e.target.value)}
+                  onChange={(e) => handleComment(e)}
                 />
               </div>
             </div>

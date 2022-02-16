@@ -7,7 +7,7 @@ import {
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
 
-const Post = ({ id, username, userImg, img, caption }) => {
+const Post = ({ id, username, img, description }) => {
   return (
     <div className="bg-white my-7 border rounded-sm">
       {/* // * Header */}
@@ -16,7 +16,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
         <img
           className="rounded-full h-9 w-9 object-contain
       border mr-3 cursor-pointer"
-          src={userImg}
+          src="duck.jpg"
           alt="user image"
         />
         <p className="flex-1 font-bold text-sm text-gray-700">{username}</p>
@@ -37,10 +37,10 @@ const Post = ({ id, username, userImg, img, caption }) => {
         <BookmarkIcon className="btn" />
       </div>
 
-      {/* // * caption */}
+      {/* // * description */}
       <p className="p-5 truncate">
         <span className="font-bold mr-1 text-gray-800">{username}</span>
-        {caption}
+        {description}
       </p>
 
       {/* // * comments */}
