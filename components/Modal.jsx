@@ -62,11 +62,17 @@ const Modal = () => {
     }
     setLoading(!loading);
 
+    let descriptionText = textAreaRef.current.value;
+    let descriptionSplitted = descriptionText.split(" ");
+    let tags = descriptionSplitted.filter((el) => el.includes("@"));
+    console.log(tags);
+
     // 1) Create a post and add to firestore 'post' collection
     const docRef = await addDoc(collection(db, "posts"), {
       username: user.username,
-      caption: captionRef.current.value,
+      description: descriptionText,
       profileImg: user.profilePic,
+      tags: tags,
       timestamp: serverTimestamp(),
     });
 
