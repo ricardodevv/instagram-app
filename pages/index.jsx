@@ -1,30 +1,11 @@
 import Feed from "../components/Feed";
 import Layout from "../components/Layout";
 import CheckIsLogged from "../components/CheckIsLogged";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userState } from "../atoms/userAtom";
-import { collection, doc, onSnapshot, query } from "firebase/firestore";
-import { db } from "../firebase";
-import { useEffect, useState } from "react";
-import postsState from "../atoms/postsAtom";
 
 const Home = () => {
   const user = useRecoilValue(userState);
-  const [posts, setPosts] = useRecoilState(postsState);
-
-  useEffect(() => {
-    let arr = [];
-    const q = query(collection(db, "posts"));
-    const unsub = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        arr = [...arr, doc.data()];
-      });
-      setPosts(arr);
-    });
-    return unsub;
-  }, [db]);
-
-  console.log(posts);
 
   return (
     <CheckIsLogged>
