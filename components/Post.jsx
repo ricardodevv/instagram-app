@@ -7,11 +7,9 @@ import {
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
 
-const Post = ({ id, username, img, description }) => {
+const Post = ({ key, id, username, img, description }) => {
   return (
-    <div className="bg-white my-7 border rounded-sm">
-      {/* // * Header */}
-
+    <div key={key} className="bg-white my-7 border rounded-sm">
       <div className="flex items-center p-3">
         <img
           className="rounded-full h-9 w-9 object-contain
