@@ -11,14 +11,15 @@ import postsState from "../atoms/postsAtom";
 const Home = () => {
   const user = useRecoilValue(userState);
   const [posts, setPosts] = useRecoilState(postsState);
-  const [a, b] = useState([]);
+
   useEffect(() => {
-    const arr = [];
+    let arr = [];
     const q = query(collection(db, "posts"));
     const unsub = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) =>
-        setPosts((posts) => [...posts, doc.data()])
-      );
+      querySnapshot.forEach((doc) => {
+        arr = [...arr, doc.data()];
+      });
+      setPosts(arr);
     });
     return unsub;
   }, [db]);

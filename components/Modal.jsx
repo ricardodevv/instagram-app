@@ -14,6 +14,7 @@ import { userState } from "../atoms/userAtom";
 import { db, storage } from "../firebase";
 import { useClosePopUp } from "../src/utils";
 import postPicture from "../atoms/postPicture";
+import { v4 as uuidv4 } from "uuid";
 
 const Modal = () => {
   const [openModal, setOpenModal] = useRecoilState(modalState);
@@ -69,6 +70,7 @@ const Modal = () => {
       description: comment,
       timestamp: serverTimestamp(),
       comments: "",
+      id: uuidv4(),
     });
 
     console.log("New doc added with ID", docRef.id);
@@ -129,7 +131,7 @@ const Modal = () => {
             </button>
           )}
         </div>
-        <div className="flex lg:h-[30rem]">
+        <div className="flex">
           {modalSection === 1 && (
             <div className="flex flex-1 flex-col w-screen sm:w-[25rem] items-center mx-auto py-32">
               <PhotographIcon className="w-[8rem] mb-8 text-gray-600" />
