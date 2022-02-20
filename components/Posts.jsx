@@ -1,7 +1,5 @@
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import postsState from "../atoms/postsAtom";
 import { db } from "../firebase";
 import Post from "./Post";
 

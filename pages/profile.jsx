@@ -10,15 +10,37 @@ import {
   PhotographIcon,
   TagIcon,
 } from "@heroicons/react/outline";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../firebase";
+import { useEffect } from "react";
 
-const profile = () => {
+const profile = ({ posts }) => {
   const user = useRecoilValue(userState);
-  const toggleSection = [
-    { name: "POSTS", icon: <PhotographIcon />, id: 1 },
-    { name: "SAVED", icon: <BookmarkIcon />, id: 2 },
-    { name: "TAGS", icon: <TagIcon />, id: 3 },
-  ];
   const [activeToggle, setActiveToggle] = useState(1);
+  const [userPosts, setUserPosts] = useState([]);
+
+  useEffect(() => {
+    user && setUserPosts(posts.filter((el) => el.username === user.username));
+  }, [user, posts]);
+
+  const toggleSection = [
+    {
+      name: "POSTS",
+      icon: <PhotographIcon />,
+      id: 1,
+      posts: userPosts,
+    },
+    {
+      name: "SAVED",
+      icon: <BookmarkIcon />,
+      id: 2,
+      posts: [{ image: "derek.jpg" }],
+    },
+    { name: "TAGS", icon: <TagIcon />, id: 3, posts: userPosts },
+  ];
+
+  const toggleToShow = toggleSection.find((el) => el.id === activeToggle);
+  console.log(toggleToShow);
 
   const handleToggleClick = (e, toggle) => {
     setActiveToggle(toggle.id);
@@ -66,39 +88,45 @@ const profile = () => {
             <div className="flex justify-center w-full border-t border-gray-300 my-6">
               <div className="flex space-x-28">
                 {toggleSection.map((toggle) => (
-                  <button
-                    key={toggle.id}
-                    className={`mt-[-1px] py-2 border-t border-gray-300 transition ease-in ${
-                      activeToggle === toggle.id
-                        ? "border-t border-gray-700"
-                        : null
-                    }`}
-                    onClick={(e) => handleToggleClick(e, toggle)}
-                  >
-                    <div className="flex space-x-3 items-center">
-                      <div
-                        className={`w-5 ${
-                          activeToggle === toggle.id
-                            ? "text-black"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {toggle.icon}
+                  <div key={toggle.id}>
+                    <button
+                      className={`mt-[-1px] py-2 border-t border-gray-300 transition ease-in ${
+                        activeToggle === toggle.id
+                          ? "border-t border-gray-700"
+                          : null
+                      }`}
+                      onClick={(e) => handleToggleClick(e, toggle)}
+                    >
+                      <div className="flex space-x-3 items-center">
+                        <div
+                          className={`w-5 ${
+                            activeToggle === toggle.id
+                              ? "text-black"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {toggle.icon}
+                        </div>
+                        <p
+                          className={`text-sm text-gray-700 font-medium ${
+                            activeToggle === toggle.id
+                              ? "text-black"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {toggle.name}
+                        </p>
                       </div>
-                      <p
-                        className={`text-sm text-gray-700 font-medium ${
-                          activeToggle === toggle.id
-                            ? "text-black"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {toggle.name}
-                      </p>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
+            {toggleToShow.posts.map((el) => (
+              <div key={el.id}>
+                <img src={el.image} alt="post image" />
+              </div>
+            ))}
           </div>
         ) : null}
       </Layout>
@@ -107,3 +135,17 @@ const profile = () => {
 };
 
 export default profile;
+
+export const getServerSideProps = async () => {
+  const q = query(collection(db, "posts"));
+  const querySnapshot = await getDocs(q);
+
+  let luck = querySnapshot.docs.map((el) => el.data());
+  for (const key in luck) {
+    luck[key].timestamp = { ...luck[key].timestamp };
+  }
+
+  return {
+    props: { posts: luck },
+  };
+};

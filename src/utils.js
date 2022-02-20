@@ -18,10 +18,10 @@ import postPicture from "../atoms/postPicture";
 export const useClosePopUp = () => {
   const [selectedPicture, setSelectedPicture] = useRecoilState(postPicture);
 
-  const closePopUp = (e, statePopUp, Ref, setPopUp) => {
-    if (statePopUp && Ref.current && !Ref.current.contains(e.target)) {
-      setPopUp(!statePopUp);
-      setSelectedPicture(null);
+  const closePopUp = (e, Modal, Ref, fun) => {
+    if (Modal && Ref.current && !Ref.current.contains(e.target)) {
+      fun();
+      // setSelectedPicture(null);
     }
   };
 
