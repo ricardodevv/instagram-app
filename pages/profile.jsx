@@ -13,6 +13,7 @@ import {
 import { collection, getDocs, query } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect } from "react";
+import { HeartIcon } from "@heroicons/react/solid";
 
 const profile = ({ posts }) => {
   const user = useRecoilValue(userState);
@@ -122,11 +123,21 @@ const profile = ({ posts }) => {
                 ))}
               </div>
             </div>
-            {toggleToShow.posts.map((el) => (
-              <div key={el.id}>
-                <img src={el.image} alt="post image" />
-              </div>
-            ))}
+            <div id="lol" className="grid grid-cols-3 auto-rows-[250px] gap-4">
+              {toggleToShow.posts.map((el) => (
+                <div className="group relative cursor-pointer">
+                  <div className="absolute w-full h-full bg-black opacity-70 hidden group-hover:flex"></div>
+                  <div className="absolute w-full h-full hidden group-hover:flex justify-center">
+                    <HeartIcon className="text-white w-14" />
+                  </div>
+                  <img
+                    src={el.image}
+                    alt="post image"
+                    className="w-full h-full object-contain bg-white"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
       </Layout>
