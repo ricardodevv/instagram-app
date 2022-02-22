@@ -10,6 +10,8 @@ import CheckIsLogged from "../components/CheckIsLogged";
 import { useAuth, useIfLogged } from "../src/utils";
 import phoneImg from "../phoneImages";
 import Head from "next/head";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const login = () => {
   const [changeImg, setChangeImg] = useState(0);
@@ -27,39 +29,56 @@ const login = () => {
     if (user) {
       router.push("/");
     }
-  }, [user]);
 
-  useEffect(() => {
     const interval = setInterval(() => {
       changeImg !== 4 ? setChangeImg(changeImg + 1) : setChangeImg(0);
     }, 4500);
     return () => clearInterval(interval);
-  }, [changeImg]);
+  }, [user, changeImg]);
 
-  const handleEmailOnChange = (e) => {
-    e.preventDefault();
-    setEmail(e.target.value);
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email("*Invalid email address"),
+      password: Yup.string()
+        .min(8, "*Password is too short - should be 8 chars minimum.")
+        .matches(/[a-zA-Z]/, "*Password can only contain Latin letters."),
+    }),
+    onSubmit: (values) => {
+      auth.signinEmailAndPassword(values.email, values.password);
+    },
+  });
 
-  const handlePasswordOnChange = (e) => {
-    e.preventDefault();
-    setPassword(e.target.value);
-  };
+  // const handleEmailOnChange = (e) => {
+  //   e.preventDefault();
+  //   setEmail(e.target.value);
+  // };
+
+  // const handlePasswordOnChange = (e) => {
+  //   e.preventDefault();
+  //   setPassword(e.target.value);
+  // };
 
   if (disabledSignIn) {
-    if (email.length > 0 || password.length > 0) {
+    if (formik.values.email.length > 0 || formik.values.password.length > 0) {
       setDisabledSignIn(!disabledSignIn);
     }
   } else {
-    if (email.length === 0 && password.length === 0) {
+    if (
+      formik.values.email.length === 0 &&
+      formik.values.password.length === 0
+    ) {
       setDisabledSignIn(!disabledSignIn);
     }
   }
 
-  const signInEmail = (e, email, password) => {
-    e.preventDefault();
-    auth.signinEmailAndPassword(email, password);
-  };
+  // const signInEmail = (e, email, password) => {
+  //   e.preventDefault();
+
+  // };
 
   const signInGoogle = () => {
     auth.signinPopUp(provider);
@@ -90,33 +109,45 @@ const login = () => {
                 <div className="relative flex w-44 h-24">
                   <Image src="/IgLogo.png" layout="fill" objectFit="contain" />
                 </div>
-                <form action="" className="mt-5 w-64">
+                <form onSubmit={formik.handleSubmit} className="mt-5 w-64">
                   <div className="relative">
                     <input
-                      name="username"
-                      value={email}
+                      name="email"
+                      value={formik.values.email}
                       type="text"
-                      placeholder="Username"
+                      placeholder="Email"
                       className="w-full border-gray-300 rounded-[4px] placeholder:text-sm"
-                      onChange={(e) => handleEmailOnChange(e)}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     />
+                    {formik.touched.email && formik.errors.email ? (
+                      <div className="text-red-500 font-semibold text-xs">
+                        {formik.errors.email}
+                      </div>
+                    ) : null}
                   </div>
                   <div>
                     <input
                       name="password"
-                      value={password}
+                      value={formik.values.password}
                       type="password"
                       placeholder="Password"
                       className="w-full border-gray-300 rounded-[4px] placeholder:text-sm mt-1.5"
-                      onChange={(e) => handlePasswordOnChange(e)}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     />
+                    {formik.touched.password && formik.errors.password ? (
+                      <div className="text-red-500 font-semibold text-xs">
+                        {formik.errors.password}
+                      </div>
+                    ) : null}
                   </div>
 
                   <button
+                    type="submit"
                     className={`w-full py-1 mt-2 bg-blue-600 text-white rounded-md ${
                       disabledSignIn ? "bg-blue-200 pointer-events-none" : null
                     }`}
-                    onClick={(e) => signInEmail(e, email, password)}
                   >
                     Sign In
                   </button>
