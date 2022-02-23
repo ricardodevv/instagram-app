@@ -16,8 +16,7 @@ import * as Yup from "yup";
 const login = () => {
   const [changeImg, setChangeImg] = useState(0);
   const [disabledSignIn, setDisabledSignIn] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showErrors, setShowErrors] = useState(false);
   const user = useRecoilValue(userState);
   const loading = useRecoilValue(loadingState);
   const provider = new GoogleAuthProvider();
@@ -52,16 +51,6 @@ const login = () => {
     },
   });
 
-  // const handleEmailOnChange = (e) => {
-  //   e.preventDefault();
-  //   setEmail(e.target.value);
-  // };
-
-  // const handlePasswordOnChange = (e) => {
-  //   e.preventDefault();
-  //   setPassword(e.target.value);
-  // };
-
   if (disabledSignIn) {
     if (formik.values.email.length > 0 || formik.values.password.length > 0) {
       setDisabledSignIn(!disabledSignIn);
@@ -71,14 +60,10 @@ const login = () => {
       formik.values.email.length === 0 &&
       formik.values.password.length === 0
     ) {
+      setShowErrors(false);
       setDisabledSignIn(!disabledSignIn);
     }
   }
-
-  // const signInEmail = (e, email, password) => {
-  //   e.preventDefault();
-
-  // };
 
   const signInGoogle = () => {
     auth.signinPopUp(provider);
@@ -116,11 +101,19 @@ const login = () => {
                       value={formik.values.email}
                       type="text"
                       placeholder="Email"
-                      className="w-full border-gray-300 rounded-[4px] placeholder:text-sm"
+                      className={`w-full border-gray-300 rounded-[4px] placeholder:text-sm ${
+                        formik.touched.email &&
+                        formik.errors.email &&
+                        showErrors
+                          ? "ring-red-500 border-red-500 focus:border-red-500 focus:ring-red-500"
+                          : null
+                      }`}
                       onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      // onBlur={formik.handleBlur}
                     />
-                    {formik.touched.email && formik.errors.email ? (
+                    {formik.touched.email &&
+                    formik.errors.email &&
+                    showErrors ? (
                       <div className="text-red-500 font-semibold text-xs">
                         {formik.errors.email}
                       </div>
@@ -132,11 +125,19 @@ const login = () => {
                       value={formik.values.password}
                       type="password"
                       placeholder="Password"
-                      className="w-full border-gray-300 rounded-[4px] placeholder:text-sm mt-1.5"
+                      className={`w-full border-gray-300 rounded-[4px] placeholder:text-sm mt-1.5 ${
+                        formik.touched.email &&
+                        formik.errors.email &&
+                        showErrors
+                          ? "ring-red-500 border-red-500 focus:border-red-500 focus:ring-red-500"
+                          : null
+                      }`}
                       onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      // onBlur={formik.handleBlur}
                     />
-                    {formik.touched.password && formik.errors.password ? (
+                    {formik.touched.password &&
+                    formik.errors.password &&
+                    showErrors ? (
                       <div className="text-red-500 font-semibold text-xs">
                         {formik.errors.password}
                       </div>
@@ -145,6 +146,7 @@ const login = () => {
 
                   <button
                     type="submit"
+                    onClick={() => formik.errors && setShowErrors(true)}
                     className={`w-full py-1 mt-2 bg-blue-600 text-white rounded-md ${
                       disabledSignIn ? "bg-blue-200 pointer-events-none" : null
                     }`}
