@@ -62,7 +62,7 @@ const Modal = () => {
   const handleDiscard = () => {
     if (backButton) {
       setSelectedPicture(null);
-      setComment("");
+      setComment([]);
       setConfirmModal(false);
       setModalSection(modalSection - 1);
     } else {

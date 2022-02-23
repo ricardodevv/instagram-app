@@ -14,17 +14,16 @@ const Posts = () => {
     return unsub;
   }, [db]);
 
-  console.log(posts);
-
   return (
     <div>
       {posts.map((post) => (
         <Post
           key={post.data().id}
-          id={post.data().id}
+          id={post.id}
           username={post.data().username}
           img={post.data().image}
           description={post.data().description}
+          comments={post.data().comments}
         />
       ))}
     </div>

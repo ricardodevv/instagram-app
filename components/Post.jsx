@@ -6,10 +6,48 @@ import {
   BookmarkIcon,
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { db } from "../firebase";
 
-const Post = ({ key, id, username, img, description }) => {
+const Post = ({ id, username, img, description }) => {
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    onSnapshot(
+      query(
+        collection(db, "posts", id, "comments"),
+        orderBy("timestamp", "desc")
+      ),
+      (snapshot) => setComments(snapshot.docs)
+    );
+  }, [db]);
+
+  const sendComment = async (e) => {
+    e.preventDefault();
+
+    const commentToSend = comment;
+    setComment("");
+
+    await addDoc(collection(db, "posts", id, "comments"), {
+      comment: commentToSend,
+      username: username,
+      timestamp: serverTimestamp(),
+    });
+  };
+  console.log(id);
+  console.log(comments);
+
   return (
-    <div key={key} className="bg-white my-7 border rounded-sm">
+    <div key={id} className="bg-white my-7 border rounded-sm">
       <div className="flex items-center p-3">
         <img
           className="rounded-full h-9 w-9 object-contain
@@ -43,15 +81,40 @@ const Post = ({ key, id, username, img, description }) => {
 
       {/* // * comments */}
 
+      {comments.map((el) => (
+        <div key={el.id}>
+          <div className="flex ml-4 space-x-2">
+            <img
+              src={
+                el.data().profileImg ? el.data().profileImg : "profileEmpty.png"
+              }
+              alt="profile picture"
+              className="w-5 h-5 rounded-full"
+            />
+            <h4 className="font-medium text-sm">{el.data().username}</h4>
+            <p className="text-sm">{el.data().comment}</p>
+          </div>
+        </div>
+      ))}
+
       {/* // * input box */}
-      <form className="flex items-center p-4" action="">
+      <form className="flex items-center p-4">
         <EmojiHappyIcon className="h-6 cursor-pointer" />
         <input
           type="text"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
           placeholder="Add a commet..."
           className="border-none flex-1 focus:ring-0 outline-none"
         />
-        <button className="font-semibold text-blue-400">Post</button>
+        <button
+          type="submit"
+          disabled={!comment.trim()}
+          onClick={sendComment}
+          className="font-semibold text-blue-500"
+        >
+          Post
+        </button>
       </form>
     </div>
   );
