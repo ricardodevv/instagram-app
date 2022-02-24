@@ -9,19 +9,15 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import emailState from "../atoms/emailAtom";
+import currentUserState from "../atoms/currentUserState";
 import { userState } from "../atoms/userAtom";
 import loadingState from "../atoms/loadingAtom";
 import { auth, db } from "../firebase";
-import postPicture from "../atoms/postPicture";
 
 export const useClosePopUp = () => {
-  const [selectedPicture, setSelectedPicture] = useRecoilState(postPicture);
-
   const closePopUp = (e, Modal, Ref, fun) => {
     if (Modal && Ref.current && !Ref.current.contains(e.target)) {
       fun();
-      // setSelectedPicture(null);
     }
   };
 
@@ -38,24 +34,24 @@ export const createUser = async (userEmail, fullname, username) => {
 
 export const useIfLogged = () => {
   const autho = useAuth();
-  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserState);
   const [loading, setLoading] = useRecoilState(loadingState);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (currrentUser) => {
-      if (currrentUser) {
-        autho.userToFind(currrentUser.email);
-        setRegisterEmail(currrentUser.email);
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        autho.userToFind(currentUser.email);
+        setCurrentUser([{ email: currentUser.email, uid: currentUser.uid }]);
       } else {
-        loading && setLoading(!loading);
+        loading && setLoading(false);
       }
     });
-  }, []);
+  }, [loading]);
 };
 
 export const useAuth = () => {
   const [user, setUser] = useRecoilState(userState);
-  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const router = useRouter();
 
@@ -65,10 +61,22 @@ export const useAuth = () => {
 
     if (userFounded.exists()) {
       setUser(userFounded.data());
-      loading && setLoading(!loading);
     } else {
-      setRegisterEmail(userEmail);
-      router.push("/register");
+      return null;
+    }
+    // else {
+    //   // setCurrentUser(userEmail);
+    //   router.push("/register");
+    // }
+  };
+
+  const signout = async () => {
+    try {
+      setUser(null);
+      setCurrentUser(null);
+      await signOut(auth);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -84,9 +92,15 @@ export const useAuth = () => {
 
   const signinPopUp = async (provider) => {
     try {
+      if (currentUser && !user) {
+        signout();
+      }
       const result = await signInWithPopup(auth, provider);
       const userEmail = result.user.email;
-      await userToFind(userEmail);
+      const luck = await userToFind(userEmail);
+      if (luck === null) {
+        router.push("/register");
+      }
     } catch (error) {
       console.log(error.code);
       console.log(error.message);
@@ -95,19 +109,9 @@ export const useAuth = () => {
     }
   };
 
-  const signout = async () => {
-    try {
-      setUser(null);
-      setRegisterEmail("");
-      await signOut(auth);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const signup = async (userEmail, fullname, username, password) => {
     try {
-      if (registerEmail.length > 0) {
+      if (currentUser.length > 0) {
         createUser(userEmail, fullname, username);
         await userToFind(userEmail);
       } else {

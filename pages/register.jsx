@@ -3,32 +3,32 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import emailState from "../atoms/emailAtom";
 import { userState } from "../atoms/userAtom";
 import { useAuth } from "../src/utils";
 import CheckIsLogged from "../components/CheckIsLogged";
 import loadingState from "../atoms/loadingAtom";
 import Head from "next/head";
+import currentUserState from "../atoms/currentUserState";
 
 const register = () => {
   const router = useRouter();
-  const [registerEmail, setRegisterEmail] = useRecoilState(emailState);
-  const loading = useRecoilValue(loadingState);
+  const auth = useAuth();
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserState);
+  const [loading, setLoading] = useRecoilState(loadingState);
   const user = useRecoilValue(userState);
   const [disabledButton, setDisabledButton] = useState(true);
-  const [email, setEmail] = useState(
-    registerEmail.length > 0 ? registerEmail : ""
-  );
+  const [email, setEmail] = useState("");
   const [fullname, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const auth = useAuth();
 
   useEffect(() => {
     if (user) {
       router.push("/");
+    } else if (currentUser) {
+      currentUser.map((el) => setEmail(el.email));
     }
-  }, [user]);
+  }, [user, currentUser, loading]);
 
   const handleEmailOnChange = (e) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ const register = () => {
 
   if (disabledButton) {
     if (
-      registerEmail.length ||
+      email.length ||
       password.length ||
       fullname.length ||
       username.length > 0
@@ -61,7 +61,7 @@ const register = () => {
     }
   } else {
     if (
-      registerEmail.length === 0 &&
+      email.length === 0 &&
       password.length === 0 &&
       fullname.length === 0 &&
       username.length === 0

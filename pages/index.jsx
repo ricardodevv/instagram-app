@@ -1,11 +1,20 @@
 import Feed from "../components/Feed";
 import Layout from "../components/Layout";
 import CheckIsLogged from "../components/CheckIsLogged";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userState } from "../atoms/userAtom";
+import { useEffect } from "react";
+import loadingState from "../atoms/loadingAtom";
 
 const Home = () => {
   const user = useRecoilValue(userState);
+  const [loading, setLoading] = useRecoilState(loadingState);
+
+  useEffect(() => {
+    if (user) {
+      loading && setLoading(false);
+    }
+  });
 
   return (
     <CheckIsLogged>

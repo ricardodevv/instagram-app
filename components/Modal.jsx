@@ -14,8 +14,7 @@ import { userState } from "../atoms/userAtom";
 import { db, storage } from "../firebase";
 import { useClosePopUp } from "../src/utils";
 import postPicture from "../atoms/postPicture";
-import { v4 as uuidv4 } from "uuid";
-import confirmModalState from "../atoms/confirmModal";
+import confirmModalState from "../atoms/confirmModalAtom";
 
 const Modal = () => {
   const [openModal, setOpenModal] = useRecoilState(modalState);
@@ -91,7 +90,6 @@ const Modal = () => {
       timestamp: serverTimestamp(),
       comments: [],
       likes: [],
-      id: uuidv4(),
     });
 
     console.log("New doc added with ID", docRef.id);

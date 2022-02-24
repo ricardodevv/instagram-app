@@ -14,12 +14,20 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore";
+import Moment from "react-moment";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
+import { useRecoilValue } from "recoil";
+import { userState } from "../atoms/userAtom";
+import currentUserState from "../atoms/currentUserState";
 
 const Post = ({ id, username, img, description }) => {
+  const user = useRecoilValue(userState);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState([]);
+  const currentUser = useRecoilValue(currentUserState);
 
   useEffect(() => {
     onSnapshot(
@@ -30,6 +38,23 @@ const Post = ({ id, username, img, description }) => {
       (snapshot) => setComments(snapshot.docs)
     );
   }, [db]);
+
+  console.log(currentUser);
+
+  // useEffect(() => {
+  //   onSnapshot(
+  //     query(collection(db, "posts", id, "likes", user.id)),
+  //     (snapshot) => setLikes(snapshot.docs)
+  //   );
+  // }, [db, id]);
+
+  // useEffect(() => {
+  //   setHasLiked(
+  //     likes.findIndex(like => like.id === id)
+  //   )
+  // })
+
+  console.log(user);
 
   const sendComment = async (e) => {
     e.preventDefault();
@@ -43,8 +68,12 @@ const Post = ({ id, username, img, description }) => {
       timestamp: serverTimestamp(),
     });
   };
-  console.log(id);
-  console.log(comments);
+
+  const likePost = async () => {
+    await addDoc(collection(db, "posts", id, "likes"), {
+      username: username,
+    });
+  };
 
   return (
     <div key={id} className="bg-white my-7 border rounded-sm">
@@ -65,7 +94,7 @@ const Post = ({ id, username, img, description }) => {
       {/* // * Buttons */}
       <div className="flex justify-between px-4 pt-4">
         <div className="flex space-x-4">
-          <HeartIcon className="btn" />
+          <HeartIcon className="btn" onClick={() => likePost} />
           <ChatIcon className="btn" />
           <PaperAirplaneIcon className="relative btn rotate-[63deg] -top-[3.5px] scale-[0.9]" />
         </div>
@@ -81,18 +110,31 @@ const Post = ({ id, username, img, description }) => {
 
       {/* // * comments */}
 
-      {comments.map((el) => (
-        <div key={el.id}>
-          <div className="flex ml-4 space-x-2">
+      {comments.map((comment) => (
+        <div key={comment.id}>
+          <div className="flex ml-8 space-x-3">
             <img
               src={
-                el.data().profileImg ? el.data().profileImg : "profileEmpty.png"
+                comment.data().profileImg
+                  ? comment.data().profileImg
+                  : "profileEmpty.png"
               }
               alt="profile picture"
               className="w-5 h-5 rounded-full"
             />
-            <h4 className="font-medium text-sm">{el.data().username}</h4>
-            <p className="text-sm">{el.data().comment}</p>
+            <div className="group flex w-full justify-between">
+              <div className="flex items-center">
+                <h4 className="font-medium">{comment.data().username}</h4>
+                <p className="ml-2">{comment.data().comment}</p>
+                <HeartIcon
+                  className="hidden group-hover:inline-flex w-4 h-4 ml-5 cursor-pointer"
+                  onClick={() => likeComment(comment.data().username)}
+                />
+              </div>
+              <Moment fromNow className="mr-5 text-xs text-gray-600">
+                {comment.data().timestamp.toDate()}
+              </Moment>
+            </div>
           </div>
         </div>
       ))}

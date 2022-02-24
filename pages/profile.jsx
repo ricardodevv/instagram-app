@@ -125,7 +125,7 @@ const profile = ({ posts }) => {
             </div>
             <div id="lol" className="grid grid-cols-3 auto-rows-[250px] gap-4">
               {toggleToShow.posts.map((el) => (
-                <div className="group relative cursor-pointer">
+                <div key={el.id} className="group relative cursor-pointer">
                   <div className="absolute w-full h-full bg-black opacity-70 hidden group-hover:flex"></div>
                   <div className="absolute w-full h-full hidden group-hover:flex justify-center">
                     <HeartIcon className="text-white w-14" />
