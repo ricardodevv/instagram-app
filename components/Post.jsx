@@ -6,13 +6,17 @@ import {
   BookmarkIcon,
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/solid";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import Moment from "react-moment";
 import { useEffect, useState } from "react";
@@ -39,22 +43,16 @@ const Post = ({ id, username, img, description }) => {
     );
   }, [db]);
 
-  console.log(currentUser);
+  useEffect(() => {
+    onSnapshot(query(collection(db, "posts", id, "likes")), (snapshot) =>
+      setLikes(snapshot.docs)
+    );
+  }, [db, id]);
 
-  // useEffect(() => {
-  //   onSnapshot(
-  //     query(collection(db, "posts", id, "likes", user.id)),
-  //     (snapshot) => setLikes(snapshot.docs)
-  //   );
-  // }, [db, id]);
-
-  // useEffect(() => {
-  //   setHasLiked(
-  //     likes.findIndex(like => like.id === id)
-  //   )
-  // })
-
-  console.log(user);
+  useEffect(() => {
+    const uid = currentUser.map((el) => el.uid);
+    setHasLiked(likes.findIndex((like) => like.id === uid[0]) !== -1);
+  }, [likes]);
 
   const sendComment = async (e) => {
     e.preventDefault();
@@ -69,10 +67,15 @@ const Post = ({ id, username, img, description }) => {
     });
   };
 
+  console.log(likes.length);
+
   const likePost = async () => {
-    await addDoc(collection(db, "posts", id, "likes"), {
-      username: username,
-    });
+    const uid = currentUser.map((el) => el.uid);
+    hasLiked
+      ? await deleteDoc(doc(db, "posts", id, "likes", uid[0]))
+      : await setDoc(doc(db, "posts", id, "likes", uid[0]), {
+          username: username,
+        });
   };
 
   return (
@@ -94,7 +97,14 @@ const Post = ({ id, username, img, description }) => {
       {/* // * Buttons */}
       <div className="flex justify-between px-4 pt-4">
         <div className="flex space-x-4">
-          <HeartIcon className="btn" onClick={() => likePost} />
+          {hasLiked ? (
+            <HeartIconSolid
+              className="btn border-red-500 text-red-500 hover:text-red-500"
+              onClick={() => likePost()}
+            ></HeartIconSolid>
+          ) : (
+            <HeartIcon className="btn" onClick={() => likePost()} />
+          )}
           <ChatIcon className="btn" />
           <PaperAirplaneIcon className="relative btn rotate-[63deg] -top-[3.5px] scale-[0.9]" />
         </div>
@@ -103,7 +113,12 @@ const Post = ({ id, username, img, description }) => {
       </div>
 
       {/* // * description */}
-      <p className="p-5 truncate">
+      <p className="p-4 truncate">
+        {likes.length > 0 && (
+          <p className="mb-2">
+            <span className="font-bold">{likes.length}</span> likes
+          </p>
+        )}
         <span className="font-bold mr-1 text-gray-800">{username}</span>
         {description}
       </p>
